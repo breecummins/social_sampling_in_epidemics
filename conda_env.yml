@@ -1,0 +1,13 @@
+name: social_epi
+channels:
+- defaults
+dependencies:
+    - python=3.7
+    - networkx
+    - pytest
+    - pandas
+    - numpy
+    - scipy
+    - ipython
+
+    

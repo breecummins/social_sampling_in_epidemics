@@ -1,0 +1,8 @@
+{
+    "samplesize" : 1,
+    "interval" : 1000,
+    "burnin" : 1000,
+    "stats_only" : true,
+    "subnetwork_seed_proportion" : 0.25,
+    "population_increase" : 1.25
+}
