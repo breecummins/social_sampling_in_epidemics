@@ -8,8 +8,8 @@ mkdir tools
 cd tools
 git clone git@github.com:veg/tn93.git
 cd tn93
-cmake .
-make install
+sudo cmake .
+sudo make install
 cd ..
 # rm -rf tn93
 
