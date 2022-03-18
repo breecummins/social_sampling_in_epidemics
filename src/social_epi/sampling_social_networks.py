@@ -1,6 +1,6 @@
 import networkx as nx
 import random, copy, itertools, json
-import CCMnet_constr_py as ccm
+from social_epi import CCMnet_constr_py as ccm
 
 
 def construct_seed_network(config,network):
@@ -23,7 +23,7 @@ def construct_seed_network(config,network):
 
 def compute_degree_dist(network,pop):
     '''
-    Return a list of (normalized) counts of degrees in order [0,1,...,pop-1]
+    Return a list of probabilities of degrees in order [0,1,...,pop-1]
     '''
     deg_seq = sorted(d for _, d in network.degree())
     deg_dict = {}
@@ -34,9 +34,7 @@ def compute_degree_dist(network,pop):
             # need to avoid zero values in deg dist for computational reasons
             deg_dict[k] = 1e-6
     dd = sorted(list(deg_dict.items()))
-    N = sum(list(deg_dict.values()))
-    # Ask Ravi: Should this be normalized or not?
-    deg_dist = [c/N for _,c in dd]
+    deg_dist = [c/pop for _,c in dd]
     return deg_dist
 
 
@@ -45,8 +43,8 @@ def gen_config(config,network):
     deg_dist = compute_degree_dist(network,pop)
     CCM_config = copy.deepcopy(config)
     CCM_config["Network_stats"] = ["Degree"]
-    # Ravi, I don't need this for Degree, correct?
-    CCM_config["Prob_Distr"] = [None]
+    # The following is not needed for "Degree" but could be needed later
+    CCM_config["Prob_Distr"] = ["Multinomial_Poisson"]
     CCM_config["Prob_Distr_Params"] = [0,deg_dist]
     CCM_config["population"] = pop
     CCM_config["G"] = G
@@ -70,10 +68,24 @@ def save_social_network(social_network,savename):
     # network = nx.adjacency_graph(json.load(open(savename)))
 
 
+def parse_contact_network_file(contact_network_file):
+    # Parse FAVITES network format
+    f = open(contact_network_file)
+    g = nx.Graph()
+    for l in f.readlines():
+        words = l.split()
+        if words[0] == "NODE":
+            g.add_node(words[1])
+        elif words[0] == "EDGE":
+            g.add_edge(words[1],words[2])
+    return g
 
-def run(contact_network,config_file,savename="social_network.json"):
-    # Need example output from FAVITES to get network format
+
+def run(contact_network_file,config_file,savename="social_network.json"):
+    # open files
+    contact_network = parse_contact_network_file(contact_network_file)
     config = json.load(open(config_file))
+    # make CCM config dictionary and then run CCM
     ccmc = gen_config(contact_network,config)
     social_network = ccm.CCMnet_constr_py(ccmc["Network_stats"],
                           ccmc["Prob_Distr"],
@@ -94,6 +106,12 @@ def run(contact_network,config_file,savename="social_network.json"):
                           ccmc["print_calculations"],
                           ccmc["use_G"],
                           ccmc["outfile"])
+    # drop social isolates not in network
+    # this does change the size of the social network
+    num_nodes = contact_network.number_of_nodes()
+    for i in list(nx.isolates(social_network)):
+        if isinstance(i,int) and i >= num_nodes:
+            social_network.remove_node(i)
     save_social_network(social_network,savename)
     return social_network
 
