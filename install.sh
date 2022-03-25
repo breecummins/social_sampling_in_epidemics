@@ -4,8 +4,8 @@
 
 # install tn93 for computing genetic distances
 # cross your fingers that cmake works
-mkdir tools
-cd tools
+mkdir src/tools
+cd src/tools
 git clone git@github.com:veg/tn93.git
 cd tn93
 sudo cmake .

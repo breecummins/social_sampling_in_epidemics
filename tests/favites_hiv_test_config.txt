@@ -1,5 +1,4 @@
 {
-    "ContactNetwork":                "NetworkX",
     "ContactNetworkGenerator":       "CCMnetPy",
     "num_cn_nodes":                  500,
     "cn_network_stats":              ["degree"],

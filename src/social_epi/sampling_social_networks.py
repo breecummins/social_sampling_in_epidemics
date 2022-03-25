@@ -82,6 +82,7 @@ def parse_contact_network_file(contact_network_file):
 
 
 def run(contact_network_file,config_file,savename="social_network.json"):
+    # contact_network_file is the (unzipped) file from FAVITES
     # open files
     contact_network = parse_contact_network_file(contact_network_file)
     config = json.load(open(config_file))
