@@ -1,6 +1,7 @@
 import networkx as nx
 import random, copy, itertools, json
 from social_epi import CCMnet_constr_py as ccm
+from social_epi import epi_parsers as parse
 
 
 def construct_seed_network(config,network):
@@ -70,23 +71,10 @@ def save_social_network(social_network,savename):
     # network = nx.adjacency_graph(json.load(open(savename)))
 
 
-def parse_contact_network_file(contact_network_file):
-    # Parse FAVITES network format
-    f = open(contact_network_file)
-    g = nx.Graph()
-    for l in f.readlines():
-        words = l.split()
-        if words[0] == "NODE":
-            g.add_node(words[1])
-        elif words[0] == "EDGE":
-            g.add_edge(words[1],words[2])
-    return g
-
-
 def run(contact_network_file,config_file,savename="social_network.json"):
     # contact_network_file is the (unzipped) file from FAVITES
     # open files
-    contact_network = parse_contact_network_file(contact_network_file)
+    contact_network = parse.parse_contact_network_file(contact_network_file)
     config = json.load(open(config_file))
     # make CCM config dictionary and then run CCM
     ccmc = gen_config(contact_network,config)
