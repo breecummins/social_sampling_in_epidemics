@@ -42,6 +42,8 @@ def gen_config(config,network):
     G,pop = (config,network)
     deg_dist = compute_degree_dist(network,pop)
     CCM_config = copy.deepcopy(config)
+    CCM_config["samplesize"] = 1
+    CCM_config["stats_only"] = True
     CCM_config["Network_stats"] = ["Degree"]
     # The following is not needed for "Degree" but could be needed later
     CCM_config["Prob_Distr"] = ["Multinomial_Poisson"]
@@ -107,12 +109,15 @@ def run(contact_network_file,config_file,savename="social_network.json"):
                           ccmc["print_calculations"],
                           ccmc["use_G"],
                           ccmc["outfile"])
-    # drop social isolates not in network
+    # drop social isolates not in contact network, only 
+    # relevant when an increase in population size has been 
+    # requested
     # this does change the size of the social network
     num_nodes = contact_network.number_of_nodes()
-    for i in list(nx.isolates(social_network)):
-        if isinstance(i,int) and i >= num_nodes:
-            social_network.remove_node(i)
+    if social_network.number_of_nodes() > num_nodes:
+        for i in list(nx.isolates(social_network)):
+            if isinstance(i,int) and i >= num_nodes:
+                social_network.remove_node(i)
     save_social_network(social_network,savename)
     return social_network
 

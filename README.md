@@ -40,10 +40,10 @@ $ cd <desired_results_folder>
 $ python <path/to/social_sampling_in_epidemics>/src/tools/run_favites_docker.py -u latest -c <path/to/config>
  ```
 
- The results will be in a `FAVITES_output` directory. Old results will be overwritten. The files include a contact network file (`contact_network.txt.gz`), a transmission network file (`transmission_network.txt.gz`), and multiple fastq/fasta sequence files. The sequence file to be used in future steps is `sequence_data.fasta.gz`. All files must be unzipped before proceeding to the next steps:
+ The results will be in a `FAVITES_output` directory. Old results will be overwritten. The files include a contact network file (`contact_network.txt.gz`), a transmission network file (`transmission_network.txt.gz`), and multiple fastq/fasta sequence files. The sequence file to be used in future steps is `sequence_data.fasta.gz`. Unzip before proceeding to the next steps:
 
  ```bash
- $ gunzip <file_name>
+ $ gunzip <path/to/sequence_data.fasta.gz>
  ```
 
  ## Clustering genetic sequences
@@ -59,16 +59,44 @@ $ python <path/to/social_sampling_in_epidemics>/src/tools/run_favites_docker.py 
 
  ```bash
  $ cd social_sampling_in_epidemics/src/tools
- $ python tn93_to_clusters.py -i <path/to/tn93_distances.dst> -o <desired_output_dir>/cluster_graph.txt 
+ $ python tn93_to_clusters.py -i <path/to/tn93_distances.dst> -o <desired_output_dir>/cluster_graph.tsv 
  ```
 
- Optionally, one can pass a `-t` threshold option if it is desired to differ from the one used in the `tn93` command.
+ Optionally, one can pass a `-t` threshold option if it is desired to differ from the one used in the `tn93` command. The output is a `tsv` file assigning every individual in the `tn93_distances.dst` file to a cluster.
 
  ## Sampling a social network
 
- Configuration file
+ The function `sampling_social_networks.py` accepts a contact network and produces a single random social network based on features of the contact network. In particular, a random subgraph of the contact network is held fixed and a CCM network sample is drawn according to the degree distribution of the contact network. The user has the option to add nodes to the social network sample.
+ 
+ The functionality is accessed by importing the module in a python script.
 
- Function call
+ ```python
+ from social_epi import sampling_social_networks as ssn
+ social_network = ssn.run("contact_network_file.txt", "ssn_config.json")
+ ``` 
+ 
+ The output `social_network` is a digraph in `networkx` format. The input `contact_network_file.txt` is the `FAVITES` output file `contact_network.txt` that is available after unzipping:
+
+ ```bash
+ $ gunzip FAVITES_output/contact_network.txt.gz
+ ```
+
+ The configuration file has several parameters in `json` dictionary format:
+ ```json
+ {
+    "interval" : 1000, 
+    "burnin" : 1000, 
+    "subnetwork_seed_proportion" : 0.25, 
+    "population_increase" : 1.25
+}
+ ```
+ `interval` is the sampling interval for the CCM sampler (an integer).
+
+ `burnin` is the burnin number of samples for the CCM sampler (an integer).
+
+ `subnetwork_seed_proportion` is the proportion of nodes that are in the fixed subnetwork of the contact network used as a seed in the social network sampler (float between 0 and 1). For example, a proportion of 0.25 means that all of the edges between nodes in a random sample of 25% of the contact network will be in the social network sample. A proportion of zero means that there is no fixed subnetwork and the CCM sample will depend only on the degree distribution of the contact network.
+
+ `population_increase` is the multiplier of the number of nodes in the contact network that will be part of the social network (a float number >= 1). For example, a multiplier of 1.25 means that the social network sample will include all of the nodes in the contact network plus approximately 25% more. This is only an approximate figure, since additional nodes that end up being isolates in the social network will be dropped. To ensure the same nodes in both the contact and social networks, set `population_increase` to 1.
 
  ## Simulating Respondent-Driven Sampling
 
