@@ -6,7 +6,7 @@ import json
 from RDSfunction import RDS
 from CountPairsfunction import CountPairs
 
-def Assess(GN,TN,SN,CN,SNwaves,CNwaves,SNcoupons,CNcoupons,SNp,CNp,SNpositive=False,CNpositive=False):
+def Assess(GN,TN,SN,CN,SNwaves,CNwaves,SNcoupons,CNcoupons,SNp,CNp,SNpositive=False,CNpositive=False,savename="rds_params.json"):
     """Assesses pairs recruited
     
     Input:
@@ -53,7 +53,7 @@ def Assess(GN,TN,SN,CN,SNwaves,CNwaves,SNcoupons,CNcoupons,SNp,CNp,SNpositive=Fa
         "CN positive": CNpositive
         }
     
-    row=json.dumps(row)
+    row=json.dump(row,open(savename,"w"))
     
     return row
     
