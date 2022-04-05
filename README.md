@@ -33,7 +33,7 @@ $ . install.sh
 
  ## Generating contact network, transmission network, and genetic sequences
 
- To run FAVITES, create a configuration file (an example is `tests/favites_hiv_test_config.txt`, documentation is in the FAVITES wiki) and do 
+ To run FAVITES, create a configuration file (an example is `tests/favites_hiv_test_config.txt`, **documentation needed**) and do 
 
  ```bash
 $ cd <desired_results_folder>
@@ -46,23 +46,15 @@ $ python <path/to/social_sampling_in_epidemics>/src/tools/run_favites_docker.py 
  $ gunzip <path/to/sequence_data.fasta.gz>
  ```
 
- ## Clustering genetic sequences
+ ## Computing distances between genetic sequences
 
  To run TN93 and compute pairwise distances, do
 
  ```bash
- $ tn93 -t 0.05 -o <desired_output_dir>/tn93_distances.dst <path/to/sequence_data.fasta>
+ $ tn93 -t 0.05 -o <desired_output_dir>/tn93_distances.csv <path/to/sequence_data.fasta>
  ```
- where `-t` specifies a distance threshold between 0 and 1 (0.05 should be interpreted as 5% sequence divergence), `-o` specifies an output file to save the pairwise distances that are below the threshold, and the last argument is the `fasta` sequence file. There are other options available when working with real as opposed to simulated data.
+ where `-t` specifies a distance threshold between 0 and 1 (0.05 should be interpreted as 5% sequence divergence), `-o` specifies an output file to save the pairwise distances that are below the threshold in csv format, and the last argument is the `fasta` sequence file. There are other options available when working with real as opposed to simulated data.
 
- To compute the cluster graph from the pairwise distance file, do
-
- ```bash
- $ cd social_sampling_in_epidemics/src/tools
- $ python tn93_to_clusters.py -i <path/to/tn93_distances.dst> -o <desired_output_dir>/cluster_graph.tsv 
- ```
-
- Optionally, one can pass a `-t` threshold option if it is desired to differ from the one used in the `tn93` command. The output is a `tsv` file assigning every individual in the `tn93_distances.dst` file to a cluster.
 
  ## Sampling a social network
 

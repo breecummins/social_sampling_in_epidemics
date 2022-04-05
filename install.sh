@@ -16,8 +16,6 @@ cd ..
 # install FAVITES
 wget https://raw.githubusercontent.com/niemasd/FAVITES/master/run_favites_docker.py 
 chmod a+x run_favites_docker.py
-wget https://raw.githubusercontent.com/niemasd/FAVITES/master/helper_scripts/tn93_to_clusters.py 
-chmod a+x tn93_to_clusters.py
 cd ..
 
 # grab the python CCM sampler and copy locally
