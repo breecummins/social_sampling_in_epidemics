@@ -2,6 +2,5 @@
     "interval" : 1000,
     "burnin" : 1000,
     "subnetwork_seed_proportion" : 0.25,
-    "population_increase" : 1.25,
-    "degree_distribution" : {"0": 19, "1" : 197, "2" : 129, "3" : 91, "4" : 53, "5" : 124, "6" : 5}
+    "degree_distribution" : {"0": 0.052, "1" : 0.186, "2" : 0.267, "3" : 0.243, "4" : 0.152, "5" : 0.061, "6" : 0.034, "7" : 0.005}
 }

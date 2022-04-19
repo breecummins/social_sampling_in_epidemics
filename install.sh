@@ -19,8 +19,8 @@ chmod a+x run_favites_docker.py
 cd ..
 
 # grab the python CCM sampler and copy locally
-cd src/social_epi
-wget https://raw.githubusercontent.com/ravigoyalgit/CCMnet_py/master/inst/python/CCMnet_constr_py.py src/social_epi/
+cd social_epi
+wget https://raw.githubusercontent.com/ravigoyalgit/CCMnet_py/master/inst/python/CCMnet_constr_py.py .
 cd ../..
 
 
