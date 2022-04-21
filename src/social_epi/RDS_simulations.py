@@ -5,14 +5,15 @@ import random as rand
 import json, warnings
 
 
-def RDS(net,waves,coupons,p,posseed=False,poswave=False):
+def RDS(net,waves,coupons,p,size,posseed=False,poswave=False):
     """Conducts respondent-driven sampling
     
     Input:
        net:       network, networkx graph
-       waves:     maximum number of waves, integer
+       waves:     maximum number of waves, integer (use 0 with poswave=True for contract tracing)
        coupons:   number of coupons per respondent, integer
        p:         probability of participation, float
+       size:      target sample size
        posseed:   whether the seed should be HIV-positive, boolean, requires node attribute 'hiv_status' with values of 0 and 1 (positive) for net
        poswave:   whether recruitment continues past wave limit for positive agents, boolean, requires node attribute 'hiv_status' with values of 0 and 1 (positive) for net
     
@@ -52,8 +53,8 @@ def RDS(net,waves,coupons,p,posseed=False,poswave=False):
     wave=0
     #Initilaize count of nodes sampled
     nodes=1 
-    #Check for waves still to be completed, unsampled nodes, and nodes sampled in previous wave
-    while wave<waves and nodes<n and sample[wave]!=[]:
+    #Check for waves still to be completed, unsampled nodes, nodes sampled in previous wave, and under target sample size
+    while wave<waves and nodes<n and sample[wave]!=[] and nodes<size:
         #Increase wave counter
         wave=wave+1
         #Initialize list of nodes sampled in current wave
@@ -152,7 +153,7 @@ def CountPairs(net,sampled):
     return count,total
 
 
-def Assess(GN,TN,SN,CN,SNwaves,CNwaves,SNcoupons,CNcoupons,SNp,CNp,SNpositive=False,CNpositive=False,savename="rds_results.json"):
+def Assess(dictionary):
     """Assesses pairs recruited
     
     Input:
@@ -172,6 +173,10 @@ def Assess(GN,TN,SN,CN,SNwaves,CNwaves,SNcoupons,CNcoupons,SNp,CNp,SNpositive=Fa
     Output:
        row:         row of dataframe is JSON format
     """
+    
+    keys=['GN','TN','SN','CN','SNwaves','CNwaves','SNcoupons','CNcoupons','SNp','CNp','SNsize','CNsize','SNpositive','CNpositive','savename']
+    GN,TN,SN,CN,SNwaves,CNwaves,SNcoupons,CNcoupons,SNp,CNp,SNsize,CNsize,SNpositive,CNpositive,savename=[dictionary.get(key) for key in keys]
+    
     SNsampled=RDS(SN,SNwaves,SNcoupons,SNp,SNpositive)
     CNsampled=RDS(CN,CNwaves,CNcoupons,CNp,CNpositive)
     
