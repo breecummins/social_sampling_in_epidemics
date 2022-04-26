@@ -22,30 +22,36 @@ def tn93distances2nx(tn93_distance_file,new_threshold=False):
     return GN
 
 
-def favitescontact2nx(contact_network_file):
-    # Parse FAVITES contact network format into a networkx graph
+def favitescontacttransmission2nx(contact_network_file,transmission_network_file):
+    # Parse FAVITES contact and transmission networks formats into networkx graphs
+    TG,hiv_pos_nodes = favitestransmission2nx(transmission_network_file)
     f = open(contact_network_file)
     CG = nx.Graph()
     for l in f.readlines():
         words = l.split()
         if words[0] == "NODE":
-            CG.add_node(words[1])
+            node = int(words[1])
+            if node in hiv_pos_nodes:
+                hiv=1
+            else:
+                hiv=0
+            CG.add_node(node,hiv=hiv)
         elif words[0] == "EDGE":
-            CG.add_edge(words[1],words[2])
-    return CG
+            CG.add_edge(int(words[1]),int(words[2]))
+    return CG, TG
 
 
 def favitestransmission2nx(transmission_network_file):
     # Parse FAVITES transmission network format into a networkx graph
     df = pd.read_csv(transmission_network_file,sep="\t",header=None)
     TG = nx.Graph()
-    nodes = df[1].values
+    nodes = list(map(int,df[1].values))
     TG.add_nodes_from(nodes)
     # get rid of seed nodes where no transmission took place
     df = df[df[0] != "None"]
-    edges = zip(df[0].values,df[1].values)
+    edges = zip(list(map(int,df[0].values)),list(map(int,df[1].values)))
     TG.add_edges_from(edges)
-    return TG
+    return TG, nodes
     
 
 

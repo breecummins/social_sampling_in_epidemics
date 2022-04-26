@@ -624,3 +624,6 @@ def R_python_interface_test(Network_stats,
 # print(type(results))
 # print(results[1])
 # print(np.mean(results[1], axis=0))
+
+
+# print(results[2])
