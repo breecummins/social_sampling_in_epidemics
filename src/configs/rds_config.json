@@ -1,0 +1,13 @@
+{
+    "social_network_waves" : 5,
+    "contact_network_waves" : 5,
+    "social_network_coupons" : 5,
+    "contact_network_coupons" : 5,
+    "social_network_participation_prob" : 0.5,
+    "contact_network_participation_prob" : 0.25,
+    "social_network_target_sample_size" : 600,
+    "contact_network_target_sample_size" : 600,
+    "social_network_seed_hiv_status" : 1,
+    "contact_network_seed_hiv_status" : 1,
+    "savename" : "rds_sim.json"
+}
