@@ -37,7 +37,7 @@ def pad_deg_dist(deg_dict,pop):
     for k in range(pop):
         if k not in deg_dict or (k in deg_dict and deg_dict[k] == 0):
             # need to avoid zero values in deg dist for computational reasons
-            deg_dict[k] = 1e-6
+            deg_dict[k] = 1e-6/pop
     dd = sorted(list(deg_dict.items()))
     deg_dist = [c for _,c in dd]
     return deg_dist
@@ -58,14 +58,15 @@ def gen_config(config,network):
     CCM_config["Prob_Distr"] = ["Multinomial_Poisson"]
     CCM_config["Prob_Distr_Params"] = [0,deg_dist]
     CCM_config["population"] = pop
-    CCM_config["G"] = G #nx.to_pandas_edgelist(G) # this drops isolates, working with Ravi for an appropriate fix
-    CCM_config["P"] = G #nx.to_pandas_edgelist(G)
+    df = nx.to_pandas_edgelist(G,dtype=int) 
+    CCM_config["G"] = df
+    CCM_config["P"] = df
     CCM_config["covPattern"] = []
-    CCM_config["bayesian_inference"] = 1
-    CCM_config["Ia"] = None
-    CCM_config["Il"] = None
-    CCM_config["R"] = None
-    CCM_config["epi_params"] = None
+    CCM_config["bayesian_inference"] = 0
+    CCM_config["Ia"] = []
+    CCM_config["Il"] = []
+    CCM_config["R"] = []
+    CCM_config["epi_params"] = []
     CCM_config["print_calculations"] = False
     CCM_config["use_G"] = 1
     CCM_config["outfile"] = "favites"

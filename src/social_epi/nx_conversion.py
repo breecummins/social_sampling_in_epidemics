@@ -30,14 +30,14 @@ def favitescontacttransmission2nx(contact_network_file,transmission_network_file
     for l in f.readlines():
         words = l.split()
         if words[0] == "NODE":
-            node = words[1]
+            node = int(words[1])
             if node in hiv_pos_nodes:
                 hiv=1
             else:
                 hiv=0
             CG.add_node(node,hiv=hiv)
         elif words[0] == "EDGE":
-            CG.add_edge(words[1],words[2])
+            CG.add_edge(int(words[1]),int(words[2]))
     return CG, TG
 
 
@@ -45,11 +45,11 @@ def favitestransmission2nx(transmission_network_file):
     # Parse FAVITES transmission network format into a networkx graph
     df = pd.read_csv(transmission_network_file,sep="\t",header=None)
     TG = nx.Graph()
-    nodes = list(df[1].values)
+    nodes = list(map(int,df[1].values))
     TG.add_nodes_from(nodes)
     # get rid of seed nodes where no transmission took place
     df = df[df[0] != "None"]
-    edges = zip(df[0].values,df[1].values)
+    edges = zip(list(map(int,df[0].values)),list(map(int,df[1].values)))
     TG.add_edges_from(edges)
     return TG, nodes
     

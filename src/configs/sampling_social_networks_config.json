@@ -1,6 +1,6 @@
 {
     "interval" : 1000,
-    "burnin" : 1000,
-    "subnetwork_seed_proportion" : 0.25,
+    "burnin" : 100000,
+    "subnetwork_seed_proportion" : 0.122,
     "degree_distribution" : {"0": 0.052, "1" : 0.186, "2" : 0.267, "3" : 0.243, "4" : 0.152, "5" : 0.061, "6" : 0.034, "7" : 0.005}
 }
