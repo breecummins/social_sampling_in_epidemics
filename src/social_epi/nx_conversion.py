@@ -35,7 +35,7 @@ def favitescontacttransmission2nx(contact_network_file,transmission_network_file
                 hiv=1
             else:
                 hiv=0
-            CG.add_node(node,hiv=hiv)
+            CG.add_node(node,hiv_status=hiv)
         elif words[0] == "EDGE":
             CG.add_edge(int(words[1]),int(words[2]))
     return CG, TG

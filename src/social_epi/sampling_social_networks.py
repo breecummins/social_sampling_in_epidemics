@@ -108,7 +108,7 @@ def run(contact_network_file,transmission_network_file,config_file,savename="soc
                           ccmc["use_G"],
                           ccmc["outfile"])
     # add hiv status to each node
-    nx.set_node_attributes(social_network,nx.get_node_attributes(contact_network,"hiv"),name="hiv")
+    nx.set_node_attributes(social_network,nx.get_node_attributes(contact_network,"hiv_status"),name="hiv_status")
     # save the network
     save_social_network(social_network,savename)
     return social_network
