@@ -52,6 +52,11 @@ def chain(favites_config,social_config,rds_config,master_results_dir):
     CN,TN,GN = get_nets(results_dir,master_results_dir)
     SN = get_social_network_sample(CN,TN,social_config,master_results_dir,timestamp)
     summary = get_rds(GN,TN,SN,CN,rds_config,master_results_dir,timestamp)
+    # save configs
+    for c in [favites_config,social_config,rds_config]:        
+        newfile = os.path.basename(os.path.splitext(c)[0])+"_{}.json".format(timestamp)
+        newpath = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,newfile)))
+        os.system("cp {} {}".format(c,newpath))
     return summary
 
 
