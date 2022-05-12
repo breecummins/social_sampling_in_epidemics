@@ -25,7 +25,7 @@ cd ..
 
 # grab the python CCM sampler and copy locally
 cd social_epi
-wget https://raw.githubusercontent.com/ravigoyalgit/CCMnet_py/master/inst/python/CCMnet_constr_py.py .
+wget https://raw.githubusercontent.com/ravigoyalgit/CCMnet_py/master/inst/python/CCMnet_constr_py.py
 cd ../..
 
 

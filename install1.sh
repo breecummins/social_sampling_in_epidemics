@@ -11,6 +11,7 @@ git clone git@github.com:veg/tn93.git
 cd tn93
 cmake .
 make install
+export PATH=$PATH:./src/tools/tn93
 cd ..
 # rm -rf tn93
 
@@ -23,7 +24,7 @@ cd ..
 
 # grab the python CCM sampler and copy locally
 cd social_epi
-wget https://raw.githubusercontent.com/ravigoyalgit/CCMnet_py/master/inst/python/CCMnet_constr_py.py .
+wget https://raw.githubusercontent.com/ravigoyalgit/CCMnet_py/master/inst/python/CCMnet_constr_py.py
 cd ../..
 
 
