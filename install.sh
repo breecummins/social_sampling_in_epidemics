@@ -4,18 +4,22 @@
 
 # install tn93 for computing genetic distances
 # cross your fingers that cmake works
-mkdir src/tools
+mkdir -p src/tools
 cd src/tools
 git clone git@github.com:veg/tn93.git
 cd tn93
-sudo cmake .
-sudo make install
+mkdir -p ~/bin
+cmake .
+cmake --build .
+cmake --install . --prefix ~/bin
 cd ..
 # rm -rf tn93
 
 # install FAVITES
 wget https://raw.githubusercontent.com/niemasd/FAVITES/master/run_favites_docker.py 
 chmod a+x run_favites_docker.py
+wget https://raw.githubusercontent.com/niemasd/FAVITES/master/run_favites_singularity.py
+chmod a+x run_favites_singularity.py
 cd ..
 
 # grab the python CCM sampler and copy locally
