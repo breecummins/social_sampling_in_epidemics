@@ -4,9 +4,9 @@ import pandas as pd
 
 def tn93distances2nx(tn93_distance_file,new_threshold=False):
     '''
-    Takes the distance csv produced by tn93 and generates a networkx graph. 
+    Takes the distance csv produced by tn93 and generates a genetic cluster graph in networkx format. 
 
-    The input new_threshold is either False, meaning use the same distance threshold used to create the tn93 file to identify edges, or is a float smaller than the tn93 distance threshold. The data will be altered to have edges only between nodes with this smaller threshold. 
+    The input new_threshold is either False, meaning use the same distance threshold used to create the tn93 file to identify edges, or is a float smaller than the tn93 distance threshold. The data will be altered to compute clusters with this smaller threshold. 
 
     ''' 
     df = pd.read_csv(tn93_distance_file)
@@ -19,6 +19,7 @@ def tn93distances2nx(tn93_distance_file,new_threshold=False):
     GN = nx.Graph()
     GN.add_nodes_from(nodes)
     GN.add_edges_from(edges)
+    GN = nx.transitive_closure(GN)
     return GN
 
 
