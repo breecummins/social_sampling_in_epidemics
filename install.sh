@@ -8,10 +8,9 @@ mkdir -p src/tools
 cd src/tools
 git clone git@github.com:veg/tn93.git
 cd tn93
-mkdir -p ~/bin
 cmake .
 cmake --build .
-cmake --install . --prefix ~/bin
+cmake --install . --prefix ~
 cd ..
 # rm -rf tn93
 
