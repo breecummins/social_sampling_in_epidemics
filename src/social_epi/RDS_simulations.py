@@ -5,7 +5,7 @@ import random as rand
 import json, warnings
 
 
-def RDS(net,waves,coupons,p,size,seeds,posseed=False,poswave=False):
+def RDS(net,waves,coupons,p,size,seeds,posseed,poswave):
     """Conducts respondent-driven sampling
     
     Input:
@@ -154,7 +154,7 @@ def CountPairs(net,sampled):
     return count,total
 
 
-def Assess(dictionary):
+def Assess(GN,TN,SN,CN,param_dict):
     """Assesses pairs recruited
     
     Input:
@@ -162,24 +162,32 @@ def Assess(dictionary):
        TN:          transmission network, networkx graph
        SN:          social network, networkx graph
        CN:          contact network, networkx graph
+       Keys in param_dict:
        SNwaves:     maximum number of waves for social network, integer
        CNwaves:     maximum number of waves for contact network, integer
        SNcoupons:   number of coupons per respondent for social network, integer
        CNcoupons:   number of coupons per respondent for contact network, integer
-       SNp:         probability of participation for social network, float
-       CNp:         probability of participation for contact network, float
-       SNpositive:  whether the seed for social network should be HIV-positive, boolean, requires node attribute 'hiv_status' with values of 0 and 1 (positive) for SN
-       SNpositive:  whether the seed for contact network should be HIV-positive, boolean, requires node attribute 'hiv_status' with values of 0 and 1 (positive) for CN
+       SNprob:         probability of participation for social network, float
+       CNprob:         probability of participation for contact network, float
+       SNsize: target sample size for social network sampling
+       CNsize: target sample size for contact network sampling 
+       SNseeds: number of seeds to start the social network RDS
+       CNseeds: number of seeds to start the contact network RDS
+       SNposseed:  True or False, whether the seed for social network should be HIV-positive, requires node attribute 'hiv_status' with values of 0 and 1 (positive) for SN
+       CNposseed:  True or False, whether the seed for contact network should be HIV-positive, requires node attribute 'hiv_status' with values of 0 and 1 (positive) for CN
+       SNposwave: True or False, whether recruitment continues past wave limit in social network for positive agents, requires node attribute 'hiv_status' with values of 0 and 1 (positive) for the social network
+       CNposwave: True or False, whether recruitment continues past wave limit in contact network for positive agents, requires node attribute 'hiv_status' with values of 0 and 1 (positive) for the contact network 
+       savename: "path/to/filename" in which to save results
     
     Output:
        row:         row of dataframe is JSON format
     """
     
-    keys=['GN','TN','SN','CN','SNwaves','CNwaves','SNcoupons','CNcoupons','SNp','CNp','SNsize','CNsize','SNseeds','CNseeds','SNposseed','CNposseed','SNposwave','CNposwave','savename']
-    GN,TN,SN,CN,SNwaves,CNwaves,SNcoupons,CNcoupons,SNp,CNp,SNsize,CNsize,SNseeds,CNseeds,SNposseed,CNposseed,SNposwave,CNposwave,savename=[dictionary.get(key) for key in keys]
+    keys=['SNwaves','CNwaves','SNcoupons','CNcoupons','SNprob','CNprob','SNsize','CNsize','SNseeds','CNseeds','SNposseed','CNposseed','SNposwave','CNposwave','savename']
+    SNwaves,CNwaves,SNcoupons,CNcoupons,SNprob,CNprob,SNsize,CNsize,SNseeds,CNseeds,SNposseed,CNposseed,SNposwave,CNposwave,savename=[param_dict.get(key) for key in keys]
     
-    SNsampled=RDS(SN,SNwaves,SNcoupons,SNp,SNsize,SNseeds,SNposseed,SNposwave)
-    CNsampled=RDS(CN,CNwaves,CNcoupons,CNp,CNsize,CNseeds,CNposseed,CNposwave)
+    SNsampled=RDS(SN,SNwaves,SNcoupons,SNprob,SNsize,SNseeds,SNposseed,SNposwave)
+    CNsampled=RDS(CN,CNwaves,CNcoupons,CNprob,CNsize,CNseeds,CNposseed,CNposwave)
     
     SNGNcount,SNGNtotal=CountPairs(GN,SNsampled)
     CNGNcount,CNGNtotal=CountPairs(GN,CNsampled)

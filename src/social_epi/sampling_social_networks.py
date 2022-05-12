@@ -82,9 +82,18 @@ def save_social_network(social_network,savename):
 
 def run(contact_network_file,transmission_network_file,config_file,savename="social_network.json"):
     # contact_network_file is the (unzipped) sexual contact network file from FAVITES
-    # transimission_network is the (unzipped) transmission network file from FAVITES
-    # open files
-    contact_network,_ = nxconvert.favitescontacttransmission2nx(contact_network_file,transmission_network_file)
+    # OR a networkx graph
+    # transimission_network is the (unzipped) transmission network file from FAVITES,
+    # may be 'None' if networkx contact network is provided
+    # config_file is a path to the sampling social networks configuration json
+    # savename is the file name where the social network will be stored  
+    # network can be recovered with
+    # network = nx.adjacency_graph(json.load(open(savename)))
+
+    if isinstance(contact_network_file,str):
+        contact_network,_ = nxconvert.favitescontacttransmission2nx(contact_network_file,transmission_network_file)
+    else:
+        contact_network =contact_network_file
     config = json.load(open(config_file))
     # make CCM config dictionary and then run CCM
     ccmc = gen_config(config,contact_network)
@@ -108,7 +117,7 @@ def run(contact_network_file,transmission_network_file,config_file,savename="soc
                           ccmc["use_G"],
                           ccmc["outfile"])
     # add hiv status to each node
-    nx.set_node_attributes(social_network,nx.get_node_attributes(contact_network,"hiv"),name="hiv")
+    nx.set_node_attributes(social_network,nx.get_node_attributes(contact_network,"hiv_status"),name="hiv_status")
     # save the network
     save_social_network(social_network,savename)
     return social_network
