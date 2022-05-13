@@ -19,7 +19,7 @@
     "NumTimeSample": "Once",
 
     "SeedSelection": "Random",
-    "num_seeds": 330,
+    "num_seeds": 5588,
 
     "SeedSequence": "VirusNonHomYuleHeightGTRGamma",
     "seed_height": 25,
