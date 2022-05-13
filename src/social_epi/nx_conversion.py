@@ -16,11 +16,13 @@ def tn93distances2nx(tn93_distance_file,new_threshold=False):
     nodes2 = [int(s.split("|")[1]) for s in df["ID2"].values]
     nodes = set(nodes1).union(set(nodes2))
     edges = zip(nodes1,nodes2)
-    GN = nx.Graph()
-    GN.add_nodes_from(nodes)
-    GN.add_edges_from(edges)
-    GN = nx.transitive_closure(GN)
-    return GN
+    GCN = nx.Graph()
+    GCN.add_nodes_from(nodes)
+    GCN.add_edges_from(edges)
+    GCN = GCN.to_directed()
+    GCN = nx.transitive_closure(GCN)
+    GCN = GCN.to_undirected()
+    return GCN
 
 
 def favitescontacttransmission2nx(contact_network_file,transmission_network_file):
@@ -53,6 +55,20 @@ def favitestransmission2nx(transmission_network_file):
     edges = zip(list(map(int,df[0].values)),list(map(int,df[1].values)))
     TG.add_edges_from(edges)
     return TG, nodes
+
+
+def initial_graph2nx(degree_distribution,number_of_edges,number_of_nodes):
+    # Degree distribution is probability of a node of degree x
+    # same format as for sampling_social_networks config
+    # number_of_edges and number_of_nodes is the size of the desired initial graph
+
+    # pad distribution with zeros
+    for k in range(number_of_nodes):
+        if k not in degree_distribution:
+            degree_distribution[k] = 0
+    # make degree sequence
+    degree_sequence = [int(i*number_of_edges) for i in sorted(degree_distribution).values]
+    #IG = nx.configuration_model()
     
 
 
