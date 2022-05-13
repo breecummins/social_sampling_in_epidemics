@@ -1,7 +1,8 @@
 {
     "interval" : 1000,
-    "burnin" : 100000,
-    "subnetwork_seed_proportion" : 0.7,
+    "burnin" : 1000,
+    "network_overlap" : 0.7,
+    "initial_#_edges" : 8946,
     "degree_distribution" : {
         "1": 0.0667,
         "2": 0.11710000000000001,

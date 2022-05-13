@@ -4,12 +4,12 @@ from social_epi import CCMnet_constr_py as ccm
 from social_epi import nx_conversion as nxconvert
 
 
-def construct_seed_network(config,network):
+def construct_overlap_network(config,network):
     '''
-    Fix a subgraph of the contact network as the seed for CCM sampling.
+    Fix a subgraph of the contact network that will also appear in the social network.
     '''
     num_nodes = network.number_of_nodes()
-    seed_prop = config["subnetwork_seed_proportion"]
+    seed_prop = config["network_overlap"]
     num_seed_edges = int(seed_prop*network.size())
     G = nx.Graph()
     G.add_nodes_from(network.nodes())
@@ -18,38 +18,9 @@ def construct_seed_network(config,network):
     return G, num_nodes
 
 
-def compute_degree_dist(network,pop):
-    '''
-    Return a list of probabilities of degrees in order [0,1,...,pop-1] generated from the input network.
-    '''
-    deg_seq = sorted(d for _, d in network.degree())
-    deg_dict = {}
-    for d,g in itertools.groupby(deg_seq):
-        deg_dict[d] = len(list(g))/pop
-    deg_dist = pad_deg_dist(deg_dict,pop)
-    return deg_dist
-
-
-def pad_deg_dist(deg_dict,pop):
-    '''
-    Given the nonzero values of a degree distribution, pad all remaining degree sizes with a small probability
-    '''
-    for k in range(pop):
-        if k not in deg_dict or (k in deg_dict and deg_dict[k] == 0):
-            # need to avoid zero values in deg dist for computational reasons
-            deg_dict[k] = 1e-6/pop
-    dd = sorted(list(deg_dict.items()))
-    deg_dist = [c for _,c in dd]
-    return deg_dist
-
-
 def gen_config(config,network):    
-    G,pop = construct_seed_network(config,network)
-    if "degree_distribution" not in config:
-        deg_dist = compute_degree_dist(network,pop)
-    else:
-        deg_dict = { int(k) : v for k,v in config["degree_distribution"].items() }
-        deg_dist = pad_deg_dist(deg_dict,pop)
+    P,pop = construct_overlap_network(config,network)
+    deg_dist,deg_dict = nxconvert.pad_deg_dist(config["degree_distribution"],pop)
     CCM_config = copy.deepcopy(config)
     CCM_config["samplesize"] = 1
     CCM_config["statsonly"] = True
@@ -57,10 +28,9 @@ def gen_config(config,network):
     # The following is not needed for "Degree" but could be needed later
     CCM_config["Prob_Distr"] = ["Multinomial_Poisson"]
     CCM_config["Prob_Distr_Params"] = [0,deg_dist]
-    CCM_config["population"] = pop
-    df = nx.to_pandas_edgelist(G,dtype=int) 
-    CCM_config["G"] = df
-    CCM_config["P"] = df
+    CCM_config["population"] = pop 
+    CCM_config["G"] = nxconvert.initialgraph2nx(deg_dict,pop,P)
+    CCM_config["P"] = nxconvert.nx2ccmformat(P) 
     CCM_config["covPattern"] = []
     CCM_config["bayesian_inference"] = 0
     CCM_config["Ia"] = []
