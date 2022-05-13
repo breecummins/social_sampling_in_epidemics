@@ -10,9 +10,8 @@ rm -rf *
 git clone git@github.com:veg/tn93.git
 cd tn93
 cmake .
-cmake --build .
-cmake --install . --prefix ~
-export PATH=$PATH:$HOME/bin
+make install
+export PATH=$PATH:./src/tools/tn93
 cd ..
 # rm -rf tn93
 
