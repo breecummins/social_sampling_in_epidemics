@@ -406,6 +406,8 @@ def CCMnet_constr_py(Network_stats,
   Prob_Distr_Params = np.array(Prob_Distr_Params)                          
 
   if use_G == 1:
+    if isinstance(G,str):
+      G = pd.read_csv(G)
     G_list = [tuple(r) for r in G.to_numpy().tolist()]
     g = generate_net(population, G_list, covPattern)
   else:
@@ -627,3 +629,7 @@ def R_python_interface_test(Network_stats,
 
 
 #print(results[2])
+
+#print(nx.__version__)
+#print(pd.__version__)
+#print(nx.__version__)

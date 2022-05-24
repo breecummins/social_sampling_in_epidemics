@@ -1,7 +1,6 @@
 import networkx as nx
 import pandas as pd
-import random
-from math import *
+import json,os
 
 
 def tn93distances2nx(tn93_distance_file,new_threshold=False):
@@ -21,9 +20,11 @@ def tn93distances2nx(tn93_distance_file,new_threshold=False):
     GCN = nx.Graph()
     GCN.add_nodes_from(nodes)
     GCN.add_edges_from(edges)
+    # make the genetic cluster network that is composed of a collection of disconnected cliques
     GCN = GCN.to_directed()
     GCN = nx.transitive_closure(GCN)
     GCN = GCN.to_undirected()
+    GCN.remove_edges_from(nx.selfloop_edges(GCN))
     return GCN
 
 
@@ -61,61 +62,72 @@ def favitestransmission2nx(transmission_network_file):
 
 def pad_deg_dist(deg_dict,num_nodes):
     '''
-    Given the nonzero values of a degree distribution, pad all remaining degree sizes with a small probability
+    Given the nonzero values of a degree distribution, pad all remaining degree sizes with a small probability. 
     '''
     deg_dict = { int(k) : v for k,v in deg_dict.items() }
+    deg_dist = []
     for k in range(num_nodes):
         if k not in deg_dict or (k in deg_dict and deg_dict[k] == 0):
             # need to avoid zero values in deg dist for computational reasons
-            deg_dict[k] = 1e-6/num_nodes
-    dd = sorted(list(deg_dict.items()))
-    deg_dist = [c for _,c in dd]
+            deg_dist.append(1e-6/num_nodes)
+        else:
+            deg_dist.append(deg_dict[k])
     return deg_dist,deg_dict
 
 
-def initialgraph2nx(degree_distribution,number_of_nodes,fixed_overlap_network):
+def initialgraph2nx(degree_distribution,number_of_nodes):
     # Degree distribution is probability of a node of degree x with the
-    # same format as for sampling_social_networks config.
+    # same format as for sampling_social_networks config (a dictionary).
     # number_of_nodes is the size of the desired initial graph.
     # fixed_overlap_network is the subnetwork of the sexual network that is also in the social network;
     # it is a networkx Graph object.
 
-    _,degree_distribution = pad_deg_dist(degree_distribution,number_of_nodes)
+    degree_distribution,_ = pad_deg_dist(degree_distribution,number_of_nodes)
     # make degree sequence 
     degree_sequence = []
-    for d,p in sorted(degree_distribution.items()):
+    for d,p in enumerate(degree_distribution):
         degree_sequence.extend([d]*int(p*number_of_nodes))
-    print(number_of_nodes)
-    print(sum(degree_sequence))
     # configuration models need an even sum of degrees
     # if sum is odd, find the degree with the highest incidence and add 1 
     # (highest incidence will create least bias, I think, at least for large graphs)
     if sum(degree_sequence) % 2 != 0:
         k = degree_sequence.index(max(degree_sequence))
         degree_sequence[k] += 1
-    #FIXME: write my own function
-
-
-
-    # # make configuration model and remove self-loops
-    # IG = nx.configuration_model(degree_sequence,create_using=nx.Graph)
-    # print(IG.number_of_edges())
-    # # IG = nx.Graph(IG)
-    # IG.remove_edges_from(nx.selfloop_edges(IG))
-    # print(IG.number_of_edges())
-    
-    # #FIXME: adding subgraph screws up the degree distribution
-    # ne = fixed_overlap_network.number_of_edges()
-    # print(ne)
-    # to_remove=random.sample(IG.edges(),k=ne)
-    # IG.remove_edges_from(to_remove)
-    # IG.add_edges_from(fixed_overlap_network.edges())
+    # make configuration model without multi-edges or self-loops
+    IG = nx.configuration_model(degree_sequence,create_using=nx.Graph)
     return IG
 
 
-def nx2ccmformat(G):
-    return nx.to_pandas_edgelist(G,dtype=int) 
-    
+def social_initial(sn_config,number_of_nodes, fixed_overlap_network):
+    if isinstance(sn_config,str):
+        config = json.load(open(sn_config))
+    else:
+        config=sn_config
+    IG = initialgraph2nx(config["deg_dist"],number_of_nodes)
+    # take union of subgraph and config model
+    IG.add_edges_from(fixed_overlap_network.edges())
+    # save
+    df = nx2pandas(IG)
+    savename = config["sn_initial_savename"]
+    df.to_csv(savename,index=False)
+    return df, savename
+
+
+def contact_initial(cn_config):
+    config = json.load(open(cn_config))
+    IG = initialgraph2nx(config["deg_dist"], config["num_nodes"])
+    # save
+    df = nx2pandas(IG)
+    savename = config["cn_initial_savename"]
+    df.to_csv(savename,index=False)
+    return df,savename
+
+
+def nx2pandas(G):
+    return nx.to_pandas_edgelist(G,dtype=int)
+
+
+
 
 
 

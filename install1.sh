@@ -7,7 +7,7 @@
 mkdir -p src/tools
 cd src/tools
 rm -rf *
-git clone git@github.com:veg/tn93.git
+git clone https://github.com/veg/tn93.git
 cd tn93
 cmake .
 make install

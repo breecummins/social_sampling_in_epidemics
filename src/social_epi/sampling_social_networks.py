@@ -1,5 +1,6 @@
 import networkx as nx
-import random, copy, itertools, json
+import pandas as pd
+import random, copy, json
 from social_epi import CCMnet_constr_py as ccm
 from social_epi import nx_conversion as nxconvert
 
@@ -10,17 +11,21 @@ def construct_overlap_network(config,network):
     '''
     num_nodes = network.number_of_nodes()
     seed_prop = config["network_overlap"]
-    num_seed_edges = int(seed_prop*network.size())
-    G = nx.Graph()
-    G.add_nodes_from(network.nodes())
+    num_seed_edges = int(seed_prop*network.number_of_edges())
     random_selection = random.sample(network.edges(), num_seed_edges)
-    G.add_edges_from(random_selection)
-    return G, num_nodes
+    P = nx.Graph()
+    P.add_nodes_from(network.nodes())
+    P.add_edges_from(random_selection)
+    return P, num_nodes
 
 
-def gen_config(config,network):    
+def gen_config(config,network): 
+    '''
+    This function is for transparency. I want the names of the CCM inputs to be clear.
+    '''   
     P,pop = construct_overlap_network(config,network)
-    deg_dist,deg_dict = nxconvert.pad_deg_dist(config["degree_distribution"],pop)
+    deg_dist,_ = nxconvert.pad_deg_dist(config["deg_dist"],pop)
+    G,Gfname = nxconvert.social_initial(config,pop,P)
     CCM_config = copy.deepcopy(config)
     CCM_config["samplesize"] = 1
     CCM_config["statsonly"] = True
@@ -29,8 +34,8 @@ def gen_config(config,network):
     CCM_config["Prob_Distr"] = ["Multinomial_Poisson"]
     CCM_config["Prob_Distr_Params"] = [0,deg_dist]
     CCM_config["population"] = pop 
-    CCM_config["G"] = nxconvert.initialgraph2nx(deg_dict,pop,P)
-    CCM_config["P"] = nxconvert.nx2ccmformat(P) 
+    CCM_config["G"] = Gfname
+    CCM_config["P"] = nxconvert.nx2pandas(P)
     CCM_config["covPattern"] = []
     CCM_config["bayesian_inference"] = 0
     CCM_config["Ia"] = []
@@ -43,19 +48,12 @@ def gen_config(config,network):
     return CCM_config
 
 
-def save_social_network(social_network,savename):
-    format2save = nx.adjacency_data(social_network)
-    json.dump(format2save,open(savename,"w"))
-    # network can be recovered with
-    # network = nx.adjacency_graph(json.load(open(savename)))
-
-
-def run(contact_network_file,transmission_network_file,config_file,savename="social_network.json"):
+def run(contact_network_file,config_file,transmission_network_file=None,socialsavename="social_network.json"):
     # contact_network_file is the (unzipped) sexual contact network file from FAVITES
     # OR a networkx graph
+    # config_file is a path to the sampling social networks configuration json
     # transimission_network is the (unzipped) transmission network file from FAVITES,
     # may be 'None' if networkx contact network is provided
-    # config_file is a path to the sampling social networks configuration json
     # savename is the file name where the social network will be stored  
     # network can be recovered with
     # network = nx.adjacency_graph(json.load(open(savename)))
@@ -89,7 +87,8 @@ def run(contact_network_file,transmission_network_file,config_file,savename="soc
     # add hiv status to each node
     nx.set_node_attributes(social_network,nx.get_node_attributes(contact_network,"hiv_status"),name="hiv_status")
     # save the network
-    save_social_network(social_network,savename)
+    df = nxconvert.nx2pandas(social_network)
+    df.to_csv(socialsavename,index=False)
     return social_network
 
 
