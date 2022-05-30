@@ -60,7 +60,11 @@ def favitestransmission2nx(transmission_network_file):
     return TG, nodes
 
 
-def pad_deg_dist(deg_dict,num_nodes):
+def nx2pandas(G):
+    return nx.to_pandas_edgelist(G,dtype=int)
+
+
+def pad_deg_dist(deg_dict,small_prob,num_nodes):
     '''
     Given the nonzero values of a degree distribution, pad all remaining degree sizes with a small probability. 
     '''
@@ -69,20 +73,17 @@ def pad_deg_dist(deg_dict,num_nodes):
     for k in range(num_nodes):
         if k not in deg_dict or (k in deg_dict and deg_dict[k] == 0):
             # need to avoid zero values in deg dist for computational reasons
-            deg_dist.append(1e-6/num_nodes)
+            deg_dist.append(small_prob)
         else:
             deg_dist.append(deg_dict[k])
-    return deg_dist,deg_dict
+    return deg_dist
 
 
-def initialgraph2nx(degree_distribution,number_of_nodes):
-    # Degree distribution is probability of a node of degree x with the
-    # same format as for sampling_social_networks config (a dictionary).
-    # number_of_nodes is the size of the desired initial graph.
-    # fixed_overlap_network is the subnetwork of the sexual network that is also in the social network;
-    # it is a networkx Graph object.
-
-    degree_distribution,_ = pad_deg_dist(degree_distribution,number_of_nodes)
+def initial_graph_from_configuration_model(config,number_of_nodes):
+    # retrieve degree distribution from hyper parameters
+    if isinstance(config,str):
+        config = json.load(open(config))    
+    degree_distribution = pad_deg_dist(config["degree_distribution"],config["small_prob"],number_of_nodes)
     # make degree sequence 
     degree_sequence = []
     for d,p in enumerate(degree_distribution):
@@ -95,36 +96,8 @@ def initialgraph2nx(degree_distribution,number_of_nodes):
         degree_sequence[k] += 1
     # make configuration model without multi-edges or self-loops
     IG = nx.configuration_model(degree_sequence,create_using=nx.Graph)
-    return IG
+    return nx2pandas(IG)
 
-
-def social_initial(sn_config,number_of_nodes, fixed_overlap_network):
-    if isinstance(sn_config,str):
-        config = json.load(open(sn_config))
-    else:
-        config=sn_config
-    IG = initialgraph2nx(config["deg_dist"],number_of_nodes)
-    # take union of subgraph and config model
-    IG.add_edges_from(fixed_overlap_network.edges())
-    # save
-    df = nx2pandas(IG)
-    savename = config["sn_initial_savename"]
-    df.to_csv(savename,index=False)
-    return df, savename
-
-
-def contact_initial(cn_config):
-    config = json.load(open(cn_config))
-    IG = initialgraph2nx(config["deg_dist"], config["num_nodes"])
-    # save
-    df = nx2pandas(IG)
-    savename = config["cn_initial_savename"]
-    df.to_csv(savename,index=False)
-    return df,savename
-
-
-def nx2pandas(G):
-    return nx.to_pandas_edgelist(G,dtype=int)
 
 
 

@@ -31,14 +31,20 @@ def get_nets(results_dir,output_dir,threshold=0.015):
     return CN,TN,GN
 
 
-def get_social_network_sample(CN,config_file,output_dir,TN="",timestamp=""):
+def get_social_network_sample(CN,TN,config_file,output_dir,timestamp):
     # CN may be a file name or a networkx graph of the contact network
-    # If CN is a file name, TN must be specified and is the file name of the transmission network; otherwise TN does not need to be specified
+    # If CN is a file name, TN must be specified and is the file name of the transmission network; otherwise TN is None or the empty string
     # config_file is the social network config json
     # output_dir is where to save social network
-    savename = os.path.abspath(os.path.expanduser(os.path.join(output_dir,"social_network_{}.json".format(timestamp))))
-    SN = ssn.run(CN,config_file,TN,savename)
-    return SN
+    # timestamp provides a unique identifier
+    SNsavename = os.path.abspath(os.path.expanduser(os.path.join(output_dir,"social_network_{}.json".format(timestamp))))
+    ONsavename = os.path.abspath(os.path.expanduser(os.path.join(output_dir,"overlap_network_{}.json".format(timestamp))))
+    SN,ON = ssn.run(config_file,CN,TN)
+    SNdf = nxc.nx2pandas(SN)
+    SNdf.to_csv(SNsavename,index=False)
+    ONdf = nxc.nx2pandas(ON)
+    ONdf.to_csv(ONsavename,index=False)
+    return SN,ON
 
 
 def get_rds(GN,TN,SN,CN,config_file,output_dir,timestamp=""):
@@ -83,3 +89,14 @@ def start_chain(contact_config,favites_config,social_config,master_results_dir="
     SN = get_social_network_sample(CN,TN,social_config,master_results_dir,timestamp)
     print("Completed.")
     
+
+if __name__ == "__main__":
+    # cd tests/chain_test/FAVITES_output
+    CN = "contact_network.txt"
+    TN = "error_free_files/transmission_network.txt"
+    config_file="../../../src/configs/sampling_social_networks_config.json"
+    SN,ON = ssn.run(config_file,CN,TN)
+    print(SN.number_of_nodes())
+    print(SN.number_of_edges())
+
+

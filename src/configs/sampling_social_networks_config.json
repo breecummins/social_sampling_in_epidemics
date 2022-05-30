@@ -1,8 +1,8 @@
 {
-    "interval" : 500,
-    "burnin" : 500,
-    "network_overlap" : 0.1,
-    "deg_dist" : {
+    "interval" : 1000,
+    "burnin" : 10000,
+    "network_overlap" : 0.13,
+    "degree_distribution" : {
         "1": 0.0667,
         "2": 0.11710000000000001,
         "3": 0.1398,
@@ -37,5 +37,5 @@
         "300": 0.0016,
         "400": 0.0016,
         "600": 0.0016},
-    "sn_initial_savename" : "initial_social_graph.csv"
+    "small_prob" : 0.000000001
 }
