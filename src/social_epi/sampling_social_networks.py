@@ -57,7 +57,10 @@ def run(config_file,contact_network_file,transmission_network_file=None):
         contact_network,_ = nxconvert.favitescontacttransmission2nx(contact_network_file,transmission_network_file)
     else:
         contact_network =contact_network_file
-    config = json.load(open(config_file))
+    if isinstance(config_file,str):
+        config = json.load(open(config_file))
+    else:
+        config = config_file
     # make CCM config dictionary and then run CCM
     ccmc = gen_config(config,contact_network)
     social_network = ccm.CCMnet_constr_py(ccmc)

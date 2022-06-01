@@ -1,6 +1,6 @@
 {
     "interval" : 1000,
-    "burnin" : 10000,
+    "burnin" : 100000,
     "network_overlap" : 0.13,
     "degree_distribution" : {
         "1": 0.0667,

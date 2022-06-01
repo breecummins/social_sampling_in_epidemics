@@ -62,7 +62,12 @@ def chain(contact_config,favites_config,social_config,rds_config,master_results_
     # So the hack is that the savename for the initial seed contact network is required to be 
     # hard-coded in two config files: contact_config and favites_config. 
     # Yuck. That's a bug generator right there.
-    initCN,initCNsavename = nxc.contact_initial(contact_config)
+    #
+    #FIXME Alternative: Write ccm config into template favites config on the fly.
+    #
+    cn_config = json.load(open(contact_config))
+    initCN = nxc.initial_graph_from_configuration_model(cn_config, cn_config["population"])
+    initCN.to_csv(cn_config["G"])
     results_dir, timestamp = get_favites(favites_config,master_results_dir)
     CN,TN,GN = get_nets(results_dir,master_results_dir)
     SN = get_social_network_sample(CN,TN,social_config,master_results_dir,timestamp)
