@@ -5,11 +5,10 @@ from social_epi import CCMnet_constr_py as ccm
 from social_epi import nx_conversion as nxconvert
 
 
-def construct_overlap_network(config,network):
+def construct_overlap_network(seed_prop,network):
     '''
     Fix a subgraph of the contact network that will also appear in the social network.
     '''
-    seed_prop = config["network_overlap"]
     num_seed_edges = int(seed_prop*network.number_of_edges())
     random_selection = random.sample(network.edges(), num_seed_edges)
     P = nx.Graph()
@@ -18,23 +17,28 @@ def construct_overlap_network(config,network):
     return P
 
 
-def gen_config(config,network): 
+def gen_config(config,population): 
     '''
     This function builds a CCM config dictionary.
     '''   
-    pop = network.number_of_nodes()
-    G = nxconvert.initial_graph_from_configuration_model(config,pop)
     CCM_config = copy.deepcopy(config)
-    CCM_config["samplesize"] = 1
+    CCM_config.pop("network_overlap")
+    if "samplesize" not in CCM_config:
+        CCM_config["samplesize"] = 1
     CCM_config["statsonly"] = True
     CCM_config["Network_stats"] = ["Degree"]
-    CCM_config["population"] = pop
+    CCM_config["population"] = population
+    G = nxconvert.initial_graph_from_configuration_model(CCM_config,population)
     CCM_config["G"] = G
     CCM_config["use_G"] = 1
-    CCM_config["outfile"] = "favites"
+    if "outfile" not in CCM_config:
+        CCM_config["outfile"] = "favites"
+    # The 0 in the first spot is meaningless for "Degree" and
+    # the empty list is a placeholder for a degree distribution that 
+    # will be built inside CCM from a user-specified dict in the config
+    CCM_config["Prob_Distr_Params"] = [0,[]]
     # The following is not needed for "Degree" but could be needed later
     CCM_config["Prob_Distr"] = ["Multinomial_Poisson"]
-    CCM_config["Prob_Distr_Params"] = [0]
     # All the following are not used
     CCM_config["P"] = None
     CCM_config["covPattern"] = []
@@ -44,6 +48,12 @@ def gen_config(config,network):
     CCM_config["R"] = []
     CCM_config["epi_params"] = []
     CCM_config["print_calculations"] = False
+    ################
+    savename_initial = "initial_social_graph.csv"
+    G.to_csv(savename_initial,index=False)
+    CCM_config["G"] = savename_initial
+    savename_config = "social_CCM_config.json"
+    json.dump(CCM_config,open(savename_config,"w"))
     return CCM_config
 
 
@@ -62,10 +72,11 @@ def run(config_file,contact_network_file,transmission_network_file=None):
     else:
         config = config_file
     # make CCM config dictionary and then run CCM
-    ccmc = gen_config(config,contact_network)
-    social_network = ccm.CCMnet_constr_py(ccmc)
+    ccmc = gen_config(config,int(contact_network.number_of_nodes()))
+    # social_network = ccm.CCMnet_constr_py(**ccmc)
+    social_network = ccm.CCMnet_constr_py(config_file=ccmc["social_ccm_config"])
     # union with fixed network
-    P = construct_overlap_network(config,contact_network)
+    P = construct_overlap_network(config["network_overlap"],contact_network)
     social_network.add_edges_from(P.edges())
    # add hiv status to each node
     nx.set_node_attributes(social_network,nx.get_node_attributes(contact_network,"hiv_status"),name="hiv_status")
