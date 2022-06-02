@@ -1,5 +1,6 @@
 import networkx as nx
 import pandas as pd
+import json,os
 
 
 def tn93distances2nx(tn93_distance_file,new_threshold=False):
@@ -19,9 +20,11 @@ def tn93distances2nx(tn93_distance_file,new_threshold=False):
     GCN = nx.Graph()
     GCN.add_nodes_from(nodes)
     GCN.add_edges_from(edges)
+    # make the genetic cluster network that is composed of a collection of disconnected cliques
     GCN = GCN.to_directed()
     GCN = nx.transitive_closure(GCN)
     GCN = GCN.to_undirected()
+    GCN.remove_edges_from(nx.selfloop_edges(GCN))
     return GCN
 
 
@@ -57,19 +60,47 @@ def favitestransmission2nx(transmission_network_file):
     return TG, nodes
 
 
-def initial_graph2nx(degree_distribution,number_of_edges,number_of_nodes):
-    # Degree distribution is probability of a node of degree x
-    # same format as for sampling_social_networks config
-    # number_of_edges and number_of_nodes is the size of the desired initial graph
+def nx2pandas(G):
+    return nx.to_pandas_edgelist(G,dtype=int)
 
-    # pad distribution with zeros
-    for k in range(number_of_nodes):
-        if k not in degree_distribution:
-            degree_distribution[k] = 0
-    # make degree sequence
-    degree_sequence = [int(i*number_of_edges) for i in sorted(degree_distribution).values]
-    #IG = nx.configuration_model()
-    
+
+def pad_deg_dist(deg_dict,small_prob,num_nodes):
+    '''
+    Given the nonzero values of a degree distribution, pad all remaining degree sizes with a small probability. 
+    '''
+    deg_dict = { int(k) : v for k,v in deg_dict.items() }
+    deg_dist = []
+    for k in range(num_nodes):
+        if k not in deg_dict or (k in deg_dict and deg_dict[k] == 0):
+            # need to avoid zero values in deg dist for computational reasons
+            deg_dist.append(small_prob)
+        else:
+            deg_dist.append(deg_dict[k])
+    return deg_dist
+
+
+def initial_graph_from_configuration_model(config,number_of_nodes):
+    # retrieve degree distribution from hyper parameters
+    if isinstance(config,str):
+        config = json.load(open(config))    
+    degree_distribution = pad_deg_dist(config["degree_distribution"],config["small_prob"],number_of_nodes)
+    # make degree sequence 
+    degree_sequence = []
+    for d,p in enumerate(degree_distribution):
+        degree_sequence.extend([d]*int(p*number_of_nodes))
+    # configuration models need an even sum of degrees
+    # if sum is odd, find the degree with the highest incidence and add 1 
+    # (highest incidence will create least bias, I think, at least for large graphs)
+    if sum(degree_sequence) % 2 != 0:
+        k = degree_sequence.index(max(degree_sequence))
+        degree_sequence[k] += 1
+    # make configuration model without multi-edges or self-loops
+    IG = nx.configuration_model(degree_sequence,create_using=nx.Graph)
+    return nx2pandas(IG)
+
+
+
+
 
 
 

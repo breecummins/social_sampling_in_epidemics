@@ -1,11 +1,7 @@
 {
-    "ContactNetworkGenerator":       "CCMnetPy",
-    "num_cn_nodes":                  15397,
-    "cn_network_stats":              ["degree"],
-    "cn_prob_dists":                 ["multinomial_poisson"],
-    "cn_prob_dist_params":           [[10, [0.031, 0.319, 0.209, 0.147, 0.086, 0.201, 0.008] + [1.e-10]*15390]],
-    "cn_covariate_pattern":          [0]*15397,
-    "cn_mcmc_burnin":                100000,
+    "cn_use_file" : 1,
+    "cn_config_file" : "src/configs/contact_config.json",
+
 
     "NodeEvolution": "VirusTreeSimulator",
     "vts_growthRate": 2.851904, 

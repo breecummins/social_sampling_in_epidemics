@@ -79,7 +79,7 @@ $ python <path/to/social_sampling_in_epidemics>/src/tools/run_favites_docker.py 
     "interval" : 1000, 
     "burnin" : 1000, 
     "subnetwork_seed_proportion" : 0.25, 
-    "degree_distribution" : {"0": 0.052, "1" : 0.186, "2" : 0.267, "3" : 0.243, "4" : 0.152, "5" : 0.061, "6" : 0.034, "7" : 0.005}
+    "degree_distribution" : {"0": 0.052, "1" : 0.186, "2" : 0.267, "3" : 0.243, "4" : 0.152, "7" : 0.005}
 }
  ```
  `interval` is the sampling interval for the CCM sampler (an integer).
@@ -88,7 +88,7 @@ $ python <path/to/social_sampling_in_epidemics>/src/tools/run_favites_docker.py 
 
  `subnetwork_seed_proportion` is the proportion of nodes that are in the fixed subnetwork of the contact network used as a seed in the social network sampler (float between 0 and 1). For example, a proportion of 0.25 means that all of the edges between nodes in a random sample of 25% of the contact network will be in the social network sample. A proportion of zero means that there is no fixed subnetwork and the CCM sample will depend only on the degree distribution of the contact network.
 
- `degree_distribution` is a dictionary containing the degree distribution that will be used to sample the social network via CCM. The dictionary has degrees as the keys and the probabilities of selecting those degrees as values. Only degrees with nonzero probability need to be included. All missing degrees will be filled with the small probability 1e-6. 
+ `degree_distribution` is a dictionary containing the degree distribution that will be used to sample the social network via CCM. The dictionary has degrees as the keys and the probabilities of selecting those degrees as values. Only degrees with nonzero probability need to be included. All missing degrees will be filled with a very small probability. 
  
 
  ## Simulating Respondent-Driven Sampling

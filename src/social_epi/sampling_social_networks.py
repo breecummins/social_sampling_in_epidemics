@@ -1,66 +1,46 @@
 import networkx as nx
-import random, copy, itertools, json
+import pandas as pd
+import random, copy, json
 from social_epi import CCMnet_constr_py as ccm
 from social_epi import nx_conversion as nxconvert
 
 
-def construct_seed_network(config,network):
+def construct_overlap_network(seed_prop,network):
     '''
-    Fix a subgraph of the contact network as the seed for CCM sampling.
+    Fix a subgraph of the contact network that will also appear in the social network.
     '''
-    num_nodes = network.number_of_nodes()
-    seed_prop = config["subnetwork_seed_proportion"]
-    num_seed_edges = int(seed_prop*network.size())
-    G = nx.Graph()
-    G.add_nodes_from(network.nodes())
+    num_seed_edges = int(seed_prop*network.number_of_edges())
     random_selection = random.sample(network.edges(), num_seed_edges)
-    G.add_edges_from(random_selection)
-    return G, num_nodes
+    P = nx.Graph()
+    P.add_nodes_from(network.nodes())
+    P.add_edges_from(random_selection)
+    return P
 
 
-def compute_degree_dist(network,pop):
+def gen_config(config,population): 
     '''
-    Return a list of probabilities of degrees in order [0,1,...,pop-1] generated from the input network.
-    '''
-    deg_seq = sorted(d for _, d in network.degree())
-    deg_dict = {}
-    for d,g in itertools.groupby(deg_seq):
-        deg_dict[d] = len(list(g))/pop
-    deg_dist = pad_deg_dist(deg_dict,pop)
-    return deg_dist
-
-
-def pad_deg_dist(deg_dict,pop):
-    '''
-    Given the nonzero values of a degree distribution, pad all remaining degree sizes with a small probability
-    '''
-    for k in range(pop):
-        if k not in deg_dict or (k in deg_dict and deg_dict[k] == 0):
-            # need to avoid zero values in deg dist for computational reasons
-            deg_dict[k] = 1e-6/pop
-    dd = sorted(list(deg_dict.items()))
-    deg_dist = [c for _,c in dd]
-    return deg_dist
-
-
-def gen_config(config,network):    
-    G,pop = construct_seed_network(config,network)
-    if "degree_distribution" not in config:
-        deg_dist = compute_degree_dist(network,pop)
-    else:
-        deg_dict = { int(k) : v for k,v in config["degree_distribution"].items() }
-        deg_dist = pad_deg_dist(deg_dict,pop)
+    This function builds a CCM config dictionary.
+    '''   
     CCM_config = copy.deepcopy(config)
-    CCM_config["samplesize"] = 1
+    CCM_config.pop("network_overlap")
+    if "samplesize" not in CCM_config:
+        CCM_config["samplesize"] = 1
     CCM_config["statsonly"] = True
     CCM_config["Network_stats"] = ["Degree"]
+    CCM_config["population"] = population
+    G = nxconvert.initial_graph_from_configuration_model(CCM_config,population)
+    CCM_config["G"] = G
+    CCM_config["use_G"] = 1
+    if "outfile" not in CCM_config:
+        CCM_config["outfile"] = "favites"
+    # The 0 in the first spot is meaningless for "Degree" and
+    # the empty list is a placeholder for a degree distribution that 
+    # will be built inside CCM from a user-specified dict in the config
+    CCM_config["Prob_Distr_Params"] = [0,[]]
     # The following is not needed for "Degree" but could be needed later
     CCM_config["Prob_Distr"] = ["Multinomial_Poisson"]
-    CCM_config["Prob_Distr_Params"] = [0,deg_dist]
-    CCM_config["population"] = pop
-    df = nx.to_pandas_edgelist(G,dtype=int) 
-    CCM_config["G"] = df
-    CCM_config["P"] = df
+    # All the following are not used
+    CCM_config["P"] = None
     CCM_config["covPattern"] = []
     CCM_config["bayesian_inference"] = 0
     CCM_config["Ia"] = []
@@ -68,59 +48,50 @@ def gen_config(config,network):
     CCM_config["R"] = []
     CCM_config["epi_params"] = []
     CCM_config["print_calculations"] = False
-    CCM_config["use_G"] = 1
-    CCM_config["outfile"] = "favites"
+    ################
+    savename_initial = "initial_social_graph.csv"
+    G.to_csv(savename_initial,index=False)
+    CCM_config["G"] = savename_initial
+    savename_config = "social_CCM_config.json"
+    json.dump(CCM_config,open(savename_config,"w"))
     return CCM_config
 
 
-def save_social_network(social_network,savename):
-    format2save = nx.adjacency_data(social_network)
-    json.dump(format2save,open(savename,"w"))
-    # network can be recovered with
-    # network = nx.adjacency_graph(json.load(open(savename)))
-
-
-def run(contact_network_file,transmission_network_file,config_file,savename="social_network.json"):
-    # contact_network_file is the (unzipped) sexual contact network file from FAVITES
-    # OR a networkx graph
-    # transimission_network is the (unzipped) transmission network file from FAVITES,
-    # may be 'None' if networkx contact network is provided
+def run(config_file,contact_network_file,transmission_network_file=None):
     # config_file is a path to the sampling social networks configuration json
-    # savename is the file name where the social network will be stored  
-    # network can be recovered with
-    # network = nx.adjacency_graph(json.load(open(savename)))
+    # contact_network_file is the (unzipped) sexual contact network file from FAVITES OR a networkx graph
+    # transmission_network is the (unzipped) transmission network file from FAVITES,
+    # may be 'None' if networkx contact network is provided
 
     if isinstance(contact_network_file,str):
         contact_network,_ = nxconvert.favitescontacttransmission2nx(contact_network_file,transmission_network_file)
     else:
         contact_network =contact_network_file
-    config = json.load(open(config_file))
+    if isinstance(config_file,str):
+        config = json.load(open(config_file))
+    else:
+        config = config_file
     # make CCM config dictionary and then run CCM
-    ccmc = gen_config(config,contact_network)
-    social_network = ccm.CCMnet_constr_py(ccmc["Network_stats"],
-                          ccmc["Prob_Distr"],
-                          ccmc["Prob_Distr_Params"], 
-                          ccmc["samplesize"],
-                          ccmc["burnin"], 
-                          ccmc["interval"],
-                          ccmc["statsonly"], 
-                          ccmc["G"],
-                          ccmc["P"],
-                          ccmc["population"], 
-                          ccmc["covPattern"],
-                          ccmc["bayesian_inference"],
-                          ccmc["Ia"], 
-                          ccmc["Il"], 
-                          ccmc["R"], 
-                          ccmc["epi_params"],
-                          ccmc["print_calculations"],
-                          ccmc["use_G"],
-                          ccmc["outfile"])
-    # add hiv status to each node
+    ccmc = gen_config(config,int(contact_network.number_of_nodes()))
+    # social_network = ccm.CCMnet_constr_py(**ccmc)
+    social_network = ccm.CCMnet_constr_py(config_file=ccmc["social_ccm_config"])
+    # union with fixed network
+    P = construct_overlap_network(config["network_overlap"],contact_network)
+    social_network.add_edges_from(P.edges())
+   # add hiv status to each node
     nx.set_node_attributes(social_network,nx.get_node_attributes(contact_network,"hiv_status"),name="hiv_status")
-    # save the network
-    save_social_network(social_network,savename)
-    return social_network
+    return social_network, P
 
 
+if __name__ == "__main__":
+    import sys
+    configfile= sys.argv[1]
+    contact_network_file = sys.argv[2]
+    transmission_network_file = sys.argv[3]
+    contact_network,_ = nxconvert.favitescontacttransmission2nx(contact_network_file,transmission_network_file)
+    config = json.load(open(configfile))
+    P = construct_overlap_network(config,contact_network)
+    P = nxconvert.nx2pandas(P)
+    P.to_csv("fixed_subgraph.csv",index=False)
+    G,Gfname = nxconvert.initial_graph_from_configuration_model(config,contact_network.number_of_nodes())
     

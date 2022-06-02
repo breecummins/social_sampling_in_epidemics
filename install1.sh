@@ -7,11 +7,11 @@
 mkdir -p src/tools
 cd src/tools
 rm -rf *
-git clone git@github.com:veg/tn93.git
+git clone https://github.com/veg/tn93.git
 cd tn93
 cmake .
 make install
-export PATH=$PATH:./src/tools/tn93
+export PATH=$PATH:$PWD/src/tools/tn93
 cd ..
 # rm -rf tn93
 
@@ -24,6 +24,7 @@ cd ..
 
 # grab the python CCM sampler and copy locally
 cd social_epi
+rm CCMnet_constr_py*
 wget https://raw.githubusercontent.com/ravigoyalgit/CCMnet_py/master/inst/python/CCMnet_constr_py.py
 cd ../..
 
