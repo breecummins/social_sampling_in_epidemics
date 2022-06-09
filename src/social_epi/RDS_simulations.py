@@ -2,7 +2,8 @@ import networkx as nx
 import pandas as pd
 import numpy as np
 import random as rand
-import json, warnings
+import pandas as pd
+import warnings
 
 
 def RDS(net,waves,coupons,p,size,seeds,posseed,poswave):
@@ -195,16 +196,16 @@ def Assess(GN,TN,SN,CN,param_dict):
     CNTNcount,CNTNtotal=CountPairs(TN,CNsampled)
     
     row={
-        "SN GN count": SNGNcount,
-        "SN GN total": SNGNtotal,
-        "CN GN count": CNGNcount,
-        "CN GN total": CNGNtotal,
-        "SN TN count": SNTNcount,
-        "SN TN total": SNTNtotal,
-        "CN TN count": CNTNcount,
-        "CN TN total": CNTNtotal,
+        "SN GN count": [SNGNcount,],
+        "SN GN total": [SNGNtotal,],
+        "CN GN count": [CNGNcount,],
+        "CN GN total": [CNGNtotal,],
+        "SN TN count": [SNTNcount,],
+        "SN TN total": [SNTNtotal,],
+        "CN TN count": [CNTNcount,],
+        "CN TN total": [CNTNtotal,],
         }
     
-    row=json.dump(row,open(savename,"w"))
+    row=pd.DataFrame(row)
     
     return row
