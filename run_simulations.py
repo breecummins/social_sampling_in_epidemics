@@ -72,6 +72,9 @@ def chain(contact_config,favites_config,social_config,rds_config,master_results_
     CN,TN,GN = get_nets(results_dir,master_results_dir)
     SN = get_social_network_sample(CN,TN,social_config,master_results_dir,timestamp)
     summary = get_rds(GN,TN,SN,CN,rds_config,master_results_dir,timestamp)
+    summaryfname = "summary_{}.csv".format(timestamp)
+    summarypath = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,summaryfname)))
+    summary.to_csv(summarypath,index=False)
     # save configs
     for c in [favites_config,social_config,rds_config]:        
         newfile = os.path.basename(os.path.splitext(c)[0])+"_{}.json".format(timestamp)
@@ -96,12 +99,31 @@ def start_chain(contact_config,favites_config,social_config,master_results_dir="
     
 
 if __name__ == "__main__":
-    # cd tests/chain_test/FAVITES_output
-    CN = "contact_network.txt"
-    TN = "error_free_files/transmission_network.txt"
-    config_file="../../../src/configs/sampling_social_networks_config.json"
-    SN,ON = ssn.run(config_file,CN,TN)
-    print(SN.number_of_nodes())
-    print(SN.number_of_edges())
+    # # cd tests/chain_test/FAVITES_output
+    # CN = "contact_network.txt"
+    # TN = "error_free_files/transmission_network.txt"
+    # config_file="../../../src/configs/sampling_social_networks_config.json"
+    # SN,ON = ssn.run(config_file,CN,TN)
+    # print(SN.number_of_nodes())
+    # print(SN.number_of_edges())
+
+    # # cd tests/chain_test/FAVITES_output
+    # CN,TN,GN = get_nets("","",threshold=0.015)
+    # CNdf = nxc.nx2pandas(CN)
+    # CNdf.to_csv("contact_network.csv",index=False)
+    # TNdf = nxc.nx2pandas(TN)
+    # TNdf.to_csv("transmission_network.csv",index=False)
+    # GNdf = nxc.nx2pandas(GN)
+    # GNdf.to_csv("genetic_cluster_network.csv",index=False)
+
+    # for Kara
+    CN,TN = nxc.favitescontacttransmission2nx("contact_network.txt","transmission_network.txt")
+    os.system("tn93 -t {} -o {} {} >/dev/null 2>&1".format(0.015,"tn93_distances.csv","sequence_data.fasta"))
+    GN = nxc.tn93distances2nx("tn93_distances.csv")
+    SN,_ = ssn.run("sampling_social_networks_config.json",CN)
+    param_dict = json.load(open("rds_config.json"))
+    summary = rds.Assess(GN,TN,SN,CN,param_dict)
+    summary.to_csv("summary.csv",index=False)
+    
 
 

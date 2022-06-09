@@ -64,6 +64,15 @@ def nx2pandas(G):
     return nx.to_pandas_edgelist(G,dtype=int)
 
 
+def pandas2nx(df):
+    return nx.from_pandas_edgelist(df,edge_attr=True)
+
+
+def pandasfile2nx(fname):
+    df = pd.read_csv(fname)
+    return pandas2nx(df)
+
+
 def pad_deg_dist(deg_dict,small_prob,num_nodes):
     '''
     Given the nonzero values of a degree distribution, pad all remaining degree sizes with a small probability. 

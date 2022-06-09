@@ -1,7 +1,6 @@
 {
-    "cn_use_file" : 1,
-    "cn_config_file" : "src/configs/contact_config.json",
-    "cn_use_dict" : 0,
+    "cn_config_file" : "contact_config.json",
+    "ContactNetworkGenerator": "CCMnetPy",
 
 
     "NodeEvolution": "VirusTreeSimulator",
