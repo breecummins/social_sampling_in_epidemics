@@ -4,11 +4,11 @@ from social_epi import sampling_social_networks as ssn
 from social_epi import RDS_simulations as rds
 
 
-def get_favites(config_file,results_dir):
+def get_favites(config_file,results_dir,version,docker_script):
     # args = location of favites config file and name of dir in which to save favites output folder
     timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     os.system("mv FAVITES_output FAVITES_output_old 2>/dev/null")
-    os.system("time python src/tools/run_favites_docker.py -u latest -c {}".format(config_file))
+    os.system("python {} -u {} -c {}".format(docker_script,version,config_file))
     os.system("gunzip FAVITES_output/contact_network.txt.gz")
     os.system("gunzip FAVITES_output/error_free_files/transmission_network.txt.gz")
     os.system("gunzip FAVITES_output/error_free_files/sequence_data.fasta.gz")
@@ -37,9 +37,16 @@ def get_social_network_sample(CN,TN,config_file,output_dir,timestamp):
     # config_file is the social network config json
     # output_dir is where to save social network
     # timestamp provides a unique identifier
-    SNsavename = os.path.abspath(os.path.expanduser(os.path.join(output_dir,"social_network_{}.json".format(timestamp))))
-    ONsavename = os.path.abspath(os.path.expanduser(os.path.join(output_dir,"overlap_network_{}.json".format(timestamp))))
-    SN,ON = ssn.run(config_file,CN,TN)
+    SNsavename = os.path.abspath(os.path.expanduser(os.path.join(output_dir,"social_network_{}.csv".format(timestamp))))
+    ONsavename = os.path.abspath(os.path.expanduser(os.path.join(output_dir,"overlap_network_{}.csv".format(timestamp))))
+    config = json.load(open(config_file))
+    fname = os.path.splitext(os.path.basename(config["savename_initial"]))[0]+"_{}.csv".format(timestamp)
+    spath = os.path.abspath(os.path.expanduser(os.path.join(output_dir,fname)))
+    config["savename_initial"] = spath
+    gname = os.path.splitext(os.path.basename(config["savename_ccm_config"]))[0]+"_{}.json".format(timestamp)
+    cpath = os.path.abspath(os.path.expanduser(os.path.join(output_dir,gname)))
+    config["savename_ccm_config"] = cpath
+    SN,ON = ssn.run(config,CN,TN)
     SNdf = nxc.nx2pandas(SN)
     SNdf.to_csv(SNsavename,index=False)
     ONdf = nxc.nx2pandas(ON)
@@ -55,7 +62,7 @@ def get_rds(GN,TN,SN,CN,config_file,output_dir,timestamp=""):
     return results
 
 
-def chain(contact_config,favites_config,social_config,rds_config,master_results_dir):
+def chain(contact_config,favites_config,social_config,rds_config,master_results_dir,favites_version="latest",docker_script="src/tools/run_favites_docker.py"):
     #FIXME: ideally the master_results_dir is passed to contact_initial and the savename 
     # in the contact_config is concatenated with it and inserted into the favites_config.
     # This currently requires an eval(open(favites_config).read()), which I am unwilling to do.
@@ -66,12 +73,26 @@ def chain(contact_config,favites_config,social_config,rds_config,master_results_
     #FIXME Alternative: Write ccm config into template favites config on the fly.
     #
     cn_config = json.load(open(contact_config))
+    print("Finding initial network.")
     initCN = nxc.initial_graph_from_configuration_model(cn_config, cn_config["population"])
-    initCN.to_csv(cn_config["G"])
-    results_dir, timestamp = get_favites(favites_config,master_results_dir)
+    # FIXME: the following line supports hack to mount files in docker/singularity; remove "strip" when favites is updated
+    cn_fname = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,cn_config["G"].strip("/FAVITES_MOUNT/")))) 
+    initCN.to_csv(cn_fname,index=False)
+    ###############
+    print("Completed.")
+    print("Favites starting.")
+    results_dir, timestamp = get_favites(favites_config,master_results_dir,favites_version,docker_script)
+    print("Completed.")
+    print("Network retrieval started.")
     CN,TN,GN = get_nets(results_dir,master_results_dir)
-    SN = get_social_network_sample(CN,TN,social_config,master_results_dir,timestamp)
+    print("Completed.")
+    print("Starting social network sampling.")
+    SN,_ = get_social_network_sample(CN,TN,social_config,master_results_dir,timestamp)
+    print("Completed.")
+    print("Starting RDS simulations.")
     summary = get_rds(GN,TN,SN,CN,rds_config,master_results_dir,timestamp)
+    print("Completed.")
+    print("Saving results.")
     summaryfname = "summary_{}.csv".format(timestamp)
     summarypath = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,summaryfname)))
     summary.to_csv(summarypath,index=False)
@@ -80,25 +101,44 @@ def chain(contact_config,favites_config,social_config,rds_config,master_results_
         newfile = os.path.basename(os.path.splitext(c)[0])+"_{}.json".format(timestamp)
         newpath = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,newfile)))
         os.system("cp {} {}".format(c,newpath))
+    # # bundle into dir
+    # all_dir = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,"all_output")))
+    # os.mkdir(all_dir)
+    # os.system("ls ")
+    # os.system("mv *{}* {}".format(timestamp,all_dir))
+    # os.system("mv {} {}".format(all_dir,all_dir+"_{}".format(timestamp)))
     return summary
 
 
-def start_chain(contact_config,favites_config,social_config,master_results_dir="chain_test"):
-    print("Finding initial network.")
-    _,_ = nxc.contact_initial(contact_config)
-    print("Completed.")
-    print("Favites starting.")
-    results_dir, timestamp = get_favites(favites_config,master_results_dir)
-    print("Completed.")
-    print("Network retrieval started.")
-    CN,TN,_ = get_nets(results_dir,master_results_dir)
-    print("Completed.")
-    print("Starting social network sampling.")
-    SN = get_social_network_sample(CN,TN,social_config,master_results_dir,timestamp)
-    print("Completed.")
-    
-
 if __name__ == "__main__":
+    import sys
+
+    '''
+    Usage: 
+    
+    python run_simulations.py <contact_config.json> <favites_config.txt> <social_config.json> <rds_config.json> <results_dir> <favites_version> <path/to/docker-singularity-script>
+
+    favites_version is optional and defaults to "latest".
+    path/to/docker is optional and defaults to "src/tools/run_favites_docker.py"
+    
+    '''
+
+    cc = sys.argv[1]
+    fc = sys.argv[2]
+    sc = sys.argv[3]
+    rc = sys.argv[4]
+    rdir = sys.argv[5]
+    if len(sys.argv) >7:
+        summary = chain(cc,fc,sc,rc,rdir, favites_version=sys.argv[6],docker_script=sys.argv[7])  
+    elif len(sys.argv) >6:
+        summary = chain(cc,fc,sc,rc,rdir, favites_version=sys.argv[6])  
+    else:
+        summary = chain(cc,fc,sc,rc,rdir)
+
+    print(summary)
+
+
+
     # # cd tests/chain_test/FAVITES_output
     # CN = "contact_network.txt"
     # TN = "error_free_files/transmission_network.txt"
@@ -116,14 +156,14 @@ if __name__ == "__main__":
     # GNdf = nxc.nx2pandas(GN)
     # GNdf.to_csv("genetic_cluster_network.csv",index=False)
 
-    # for Kara
-    CN,TN = nxc.favitescontacttransmission2nx("contact_network.txt","transmission_network.txt")
-    os.system("tn93 -t {} -o {} {} >/dev/null 2>&1".format(0.015,"tn93_distances.csv","sequence_data.fasta"))
-    GN = nxc.tn93distances2nx("tn93_distances.csv")
-    SN,_ = ssn.run("sampling_social_networks_config.json",CN)
-    param_dict = json.load(open("rds_config.json"))
-    summary = rds.Assess(GN,TN,SN,CN,param_dict)
-    summary.to_csv("summary.csv",index=False)
+    # # for Kara
+    # CN,TN = nxc.favitescontacttransmission2nx("contact_network.txt","transmission_network.txt")
+    # os.system("tn93 -t {} -o {} {} >/dev/null 2>&1".format(0.015,"tn93_distances.csv","sequence_data.fasta"))
+    # GN = nxc.tn93distances2nx("tn93_distances.csv")
+    # SN,_ = ssn.run("sampling_social_networks_config.json",CN)
+    # param_dict = json.load(open("rds_config.json"))
+    # summary = rds.Assess(GN,TN,SN,CN,param_dict)
+    # summary.to_csv("summary.csv",index=False)
     
 
 

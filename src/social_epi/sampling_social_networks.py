@@ -49,16 +49,16 @@ def gen_config(config,population):
     CCM_config["epi_params"] = []
     CCM_config["print_calculations"] = False
     ################
-    savename_initial = "initial_social_graph.csv"
-    G.to_csv(savename_initial,index=False)
-    CCM_config["G"] = savename_initial
-    savename_config = "social_CCM_config.json"
-    json.dump(CCM_config,open(savename_config,"w"))
+    G.to_csv(config["savename_initial"],index=False)
+    CCM_config["G"] = config["savename_initial"]
+    json.dump(CCM_config,open(config["savename_ccm_config"],"w"))
+    CCM_config.pop("savename_initial")
+    CCM_config.pop("savename_ccm_config")
     return CCM_config
 
 
-def run(config_file,contact_network_file,transmission_network_file=None):
-    # config_file is a path to the sampling social networks configuration json
+def run(config,contact_network_file,transmission_network_file=None):
+    # config is either a dictionary or a path to the sampling social networks configuration json
     # contact_network_file is the (unzipped) sexual contact network file from FAVITES OR a networkx graph
     # transmission_network is the (unzipped) transmission network file from FAVITES,
     # may be 'None' if networkx contact network is provided
@@ -67,14 +67,11 @@ def run(config_file,contact_network_file,transmission_network_file=None):
         contact_network,_ = nxconvert.favitescontacttransmission2nx(contact_network_file,transmission_network_file)
     else:
         contact_network =contact_network_file
-    if isinstance(config_file,str):
-        config = json.load(open(config_file))
-    else:
-        config = config_file
+    if isinstance(config,str):
+        config = json.load(open(config))
     # make CCM config dictionary and then run CCM
     ccmc = gen_config(config,int(contact_network.number_of_nodes()))
-    # social_network = ccm.CCMnet_constr_py(**ccmc)
-    social_network = ccm.CCMnet_constr_py(config_file=ccmc["social_ccm_config"])
+    social_network = ccm.CCMnet_constr_py(**ccmc)
     # union with fixed network
     P = construct_overlap_network(config["network_overlap"],contact_network)
     social_network.add_edges_from(P.edges())
