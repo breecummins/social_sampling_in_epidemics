@@ -1,5 +1,5 @@
 {
-    "cn_config_file" : "contact_config.json",
+    "cn_config_file" : "/FAVITES_MOUNT/contact_config.json",
     "ContactNetworkGenerator": "CCMnetPy",
 
 
