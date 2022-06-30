@@ -144,7 +144,7 @@ COMMAND += ['-B',OUTPUT_DIR+':/FAVITES_MOUNT:rw']  # mount output directory
 
 ###################
 # hack to access ccm config and supporting file
-COMMAND += ['-B','contact_config.json:/FAVITES_MOUNT/contact_config.json']
+COMMAND += ['-B','/home/b37v456/GIT/social_sampling_in_epidemics/simulations/20220630/contact_config.json:/FAVITES_MOUNT/contact_config.json']
 COMMAND += ['-B','initial_contact_graph.csv:/FAVITES_MOUNT/initial_contact_graph.csv']
 ###################
 
