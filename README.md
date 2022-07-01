@@ -29,6 +29,12 @@ $ source activate social_epi
 $ . install.sh
 ```
 
+To make sure that the `tn93` tool is available at all times, you will need to add the line 
+```bash
+export PATH=$PATH:$HOME/bin
+```
+to your `.bashrc` or `.bash_profile`.
+
  # Usage
 
  ## Generating contact network, transmission network, and genetic sequences
