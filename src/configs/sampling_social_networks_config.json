@@ -37,5 +37,7 @@
         "300": 0.0016,
         "400": 0.0016,
         "600": 0.0016},
-    "small_prob" : 0.000000001
+    "small_prob" : 0.000000001,
+    "savename_initial" : "initial_social_network.csv",
+    "savename_ccm_config" : "social_ccm_config.json"
 }
