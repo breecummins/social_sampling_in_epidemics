@@ -1,0 +1,23 @@
+{
+    "degree_distribution" : {"0" : 0.089, "1" : 0.354, "2" : 0.189, "3" : 0.146, "4" : 0.089, "5" : 0.128, "6" : 0.005},
+    "small_prob" :  0.000000001,
+    "population" : 15397,
+    "burnin" : 100000,
+    "interval" : 1000,
+    "samplesize" : 1,
+    "statsonly" : true,
+    "Network_stats" : ["Degree"],
+    "Prob_Distr" : ["Multinomial_Poisson"],
+    "Prob_Distr_Params" : [0],
+    "G" : "/FAVITES_MOUNT/initial_contact_graph.csv",
+    "P" : "",
+    "covPattern" : [],
+    "bayesian_inference": 0,
+    "Ia" : [],
+    "Il" : [],
+    "R" : [],
+    "epi_params" : [],
+    "print_calculations" : false,
+    "use_G" : 1,
+    "outfile" : "favites"
+}
