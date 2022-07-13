@@ -176,8 +176,8 @@ COMMAND += ['-v',TMP_CONFIG.name+':/USER_CONFIG.JSON']                # compatib
 COMMAND += ['-v',OUTPUT_DIR+':/OUTPUT_DIR']
 ###################
 # hack to access ccm config and supporting file
-COMMAND += ['-v','/Users/b37v456/GIT/social_sampling_in_epidemics/simulations/20220630/contact_config.json:/FAVITES_MOUNT/contact_config.json']
-COMMAND += ['-v','/Users/b37v456/GIT/social_sampling_in_epidemics/simulations/20220630/initial_contact_graph.csv:/FAVITES_MOUNT/initial_contact_graph.csv']
+COMMAND += ['-v','/Users/b37v456/GIT/social_sampling_in_epidemics/simulations/check_incidence/contact_config.json:/FAVITES_MOUNT/contact_config.json']
+COMMAND += ['-v','/Users/b37v456/GIT/social_sampling_in_epidemics/simulations/check_incidence/initial_contact_graph.csv:/FAVITES_MOUNT/initial_contact_graph.csv']
 ###################
 
 if CN_FILE is not None:                                               # mount contact network file (if need be)
