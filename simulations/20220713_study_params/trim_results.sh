@@ -1,17 +1,17 @@
 #!/bin/bash
 
-cp -r results results_trimmed
-cd results_trimmed/JOB*
+# cp -r results results_trimmed
+# cd results_trimmed/JOB*
 echo $PWD
 
 for dir in `ls`
 do
-   echo dir
+   echo $dir
 done
 
 # for dir in `ls`
 # do
-#    cd dir
+#    cd $dir
 #    cp FAVITES_output*/contact_network.txt .
 #    cp FAVITES_output*/error_free_files/transmission_network.txt .
 #    rm initial*
