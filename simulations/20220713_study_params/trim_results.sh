@@ -6,7 +6,8 @@ echo $PWD
 
 for dir in `ls`
 do
-   echo $dir
+   cd $dir
+   cd ..
 done
 
 # for dir in `ls`
