@@ -4,7 +4,7 @@
 cd results_trimmed/JOB*
 echo $PWD
 
-for dir in `ls`
+for dir in ./*/
 do
    cd "$dir"
    cd ..
