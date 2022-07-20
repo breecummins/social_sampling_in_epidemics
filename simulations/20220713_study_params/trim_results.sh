@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # cp -r results results_trimmed
-# cd results_trimmed/JOB*
+cd results_trimmed/JOB*
 echo $PWD
 
 for dir in `ls`
