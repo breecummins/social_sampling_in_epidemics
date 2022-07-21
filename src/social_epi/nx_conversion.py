@@ -111,8 +111,7 @@ def initial_graph_from_configuration_model(config,number_of_nodes):
 def reinflate_networks(contacttxt,transmissiontxt,tn93dists,socialcsv):    
     cn,tn = favitescontacttransmission2nx(contacttxt,transmissiontxt)
     gn = tn93distances2nx(tn93dists,new_threshold=False)
-    df = pd.read_csv(socialcsv)
-    sn = pandas2nx(df)
+    sn = pandas2nx(pd.read_csv(socialcsv))
     sn.add_nodes_from(cn.nodes())
     nx.set_node_attributes(sn,nx.get_node_attributes(cn,"hiv_status"),name="hiv_status")
     return gn,tn,sn,cn

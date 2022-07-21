@@ -1,0 +1,17 @@
+{
+    "SNwaves" : 600,
+    "CNwaves" : 0,
+    "SNcoupons" : 6,
+    "CNcoupons" : 15937,
+    "SNprob" : 0.4,
+    "CNprob" : 0.175,
+    "SNsize" : 600,
+    "CNsize" : 15397,
+    "SNseeds" : 62,
+    "CNseeds" : 62,
+    "SNposseed" : false,
+    "CNposseed" : true,
+    "SNposwave" : false,
+    "CNposwave" : true,
+    "savename" : "rds_sim.json"
+}
