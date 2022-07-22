@@ -6,10 +6,7 @@ import os,json
 
 
 def get_genetic_cluster_distribution(tn93_file,tn_file):
-    gn = nxc.tn93distances2nx(tn93_file,new_threshold=False)
-    tn,_ = nxc.favitestransmission2nx(tn_file)
-    gn.add_nodes_from(tn)
-
+    gn = nxc.tn93distances2nx(tn_file,tn93_file,new_threshold=False)
     clusters = [len(c) for c in sorted(nx.connected_components(gn), key=len, reverse=True)]
     distribution = {int(cs) : clusters.count(cs) for cs in set(clusters)}
     return distribution
@@ -28,9 +25,9 @@ def collate_results(list_tn93_files):
     return collated_dists
 
 
-def summary_stats(distributions):
+def summary_stats(distributions,save_dist_file):
     clusters = {int(key) : np.mean(val) for key,val in distributions.items()}
-    json.dump(clusters,open(os.path.expanduser("~/GIT/social_sampling_in_epidemics/simulations/20220713_study_params/genetic_cluster_distribution.json"),"w"))
+    json.dump(clusters,open(os.path.expanduser(save_dist_file),"w"))
     return clusters
 
 
@@ -46,10 +43,8 @@ def view_stats(clusters,upper_xlim=None,upper_ylim=None):
     plt.show()
 
 
-def get_tn93_files():
+def get_tn93_files(networks_folder):
     all_files = []
-    base = os.path.expanduser("~/GIT/social_sampling_in_epidemics/simulations/")
-    networks_folder = os.path.join(base,"20220713_study_params/results_trimmed/JOB549929")
     for dir in os.listdir(networks_folder):
         full_dir = os.path.join(networks_folder,dir)
         tn93file = os.path.join(full_dir,"tn93_distances.csv")
@@ -58,18 +53,24 @@ def get_tn93_files():
     return all_files
 
 
-def analyze(upper_xlim):
-    list_tn93_files = get_tn93_files()
+def analyze(networks_folder,savename,upper_xlim,upper_ylim):
+    list_tn93_files = get_tn93_files(networks_folder)
     all_cluster_distributions = collate_results(list_tn93_files)
-    clusters = summary_stats(all_cluster_distributions)
-    view_stats(clusters,upper_xlim)
+    clusters = summary_stats(all_cluster_distributions,savename)
+    view_stats(clusters,upper_xlim,upper_ylim)
     return clusters
 
 
 if __name__ == "__main__":
-    # clusters = analyze(60)
-    clusters = json.load(open("20220713_study_params/genetic_cluster_distribution.json"))
+    # # compute cluster distribution
+    # base = os.path.expanduser("~/GIT/social_sampling_in_epidemics/simulations/study_params_20220722/")
+    # networks_folder = os.path.join(base,"results_trimmed/JOB555814")
+    savename = os.path.join(base,"genetic_cluster_distribution.json")
+    # clusters = analyze(networks_folder,savename,100,300)
+
+    # graph only
+    clusters = json.load(open(savename))
     clusters = {int(c):v for c,v in clusters.items()}
-    view_stats(clusters,upper_xlim=250,upper_ylim=350)
+    view_stats(clusters,upper_xlim=250,upper_ylim=None)
 
 
