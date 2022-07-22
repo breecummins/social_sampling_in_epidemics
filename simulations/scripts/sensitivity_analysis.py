@@ -65,28 +65,28 @@ def visualize(stats_df,result_type="props"):
 
 if __name__ == "__main__":
     # sim 1
-    parentdir = "20220720_vary_SN_size"
+    parentdir = "vary_SN_size_20220722"
     dirnames = ["size_200","size_400","size_600","size_800","size_1000"]
     param_vals = [200, 400, 600, 800, 1000]
     param_type = "Social Sample Size"
     tag = "sn_samp_size"
 
     # # sim 2
-    # parentdir = "20220721_vary_SN_acceptance"
+    # parentdir = "vary_SN_acceptance_"
     # dirnames = ["prob_30","prob_35","prob_40","prob_45","prob_50"]
     # param_vals = [0.3,0.35,0.4,0.45,0.5]
     # param_type = "Social Acceptance Probability"
     # tag = "sn_accept_prob"
 
     # # sim 3
-    # parentdir = "20220722_vary_CN_acceptance"
+    # parentdir = "vary_CN_acceptance_"
     # dirnames = ["prob_125","prob_150","prob_175","prob_200","prob_225"]
     # param_vals = [0.125,0.150,0.175,0.200,0.225]
     # param_type = "Sexual Contact Acceptance Probability"
     # tag = "cn_accept_prob"
 
     # # sim 4
-    # parentdir = "20220722_vary_RDS_seeds"
+    # parentdir = "vary_RDS_seeds_"
     # dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
     # param_vals = [20,40,60,80,100]
     # param_type = "Number of RDS Seeds"
