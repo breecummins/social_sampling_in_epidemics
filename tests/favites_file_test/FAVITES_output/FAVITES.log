@@ -1,0 +1,12 @@
+/---------------------------------------------------------------------\
+| FAVITES - FrAmework for VIral Transmission and Evolution Simulation |
+|                           Version 1.2.10                            |
+|                         Niema Moshiri 2017                          |
+\---------------------------------------------------------------------/
+
+========================   Simulation Process  ========================
+Loading contact network... done
+Creating ContactNetwork object... done
+Selecting seed nodes... done
+Infecting seed nodes... done
+Performing transmission simulations...
