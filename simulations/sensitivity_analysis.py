@@ -70,12 +70,17 @@ if __name__ == "__main__":
     # param_vals = [200, 400, 600, 800, 1000]
     # param_type = "Social Sample Size"
 
-    # sim 2
-    parentdir = "20220721_vary_SN_acceptance"
-    dirnames = ["prob_30","prob_35","prob_40","prob_45","prob_50"]
-    param_vals = [0.3,0.35,0.4,0.45,0.5]
-    param_type = "Social Acceptance Probability"
+    # # sim 2
+    # parentdir = "20220721_vary_SN_acceptance"
+    # dirnames = ["prob_30","prob_35","prob_40","prob_45","prob_50"]
+    # param_vals = [0.3,0.35,0.4,0.45,0.5]
+    # param_type = "Social Acceptance Probability"
 
+    # sim 3
+    parentdir = "20220722_vary_CN_acceptance"
+    dirnames = ["prob_125","prob_150","prob_175","prob_200","prob_225"]
+    param_vals = [0.125,0.150,0.175,0.200,0.225]
+    param_type = "Sexual Contact Acceptance Probability"
 
     # run simulations
     run_all(parentdir,dirnames)

@@ -27,7 +27,7 @@ def get_nets(results_dir,output_dir,threshold=0.015):
     seqfile = os.path.abspath(os.path.expanduser(os.path.join(results_dir,"error_free_files/sequence_data.fasta")))
     distfile = os.path.abspath(os.path.expanduser(os.path.join(output_dir,"tn93_distances.csv")))
     os.system("tn93 -t {} -o {} {} >/dev/null 2>&1".format(threshold,distfile,seqfile))
-    GN = nxc.tn93distances2nx(distfile)
+    GN = nxc.tn93distances2nx(tnfile,distfile)
     return CN,TN,GN
 
 
@@ -159,7 +159,7 @@ if __name__ == "__main__":
     # # for Kara
     # CN,TN = nxc.favitescontacttransmission2nx("contact_network.txt","transmission_network.txt")
     # os.system("tn93 -t {} -o {} {} >/dev/null 2>&1".format(0.015,"tn93_distances.csv","sequence_data.fasta"))
-    # GN = nxc.tn93distances2nx("tn93_distances.csv")
+    # GN = nxc.tn93distances2nx("transmission_network.txt","tn93_distances.csv")
     # SN,_ = ssn.run("sampling_social_networks_config.json",CN)
     # param_dict = json.load(open("rds_config.json"))
     # summary = rds.Assess(GN,TN,SN,CN,param_dict)

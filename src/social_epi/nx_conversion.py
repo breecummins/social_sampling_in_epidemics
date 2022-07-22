@@ -3,14 +3,15 @@ import pandas as pd
 import json,os
 
 
-def tn93distances2nx(tn93_distance_file,new_threshold=False):
+def tn93distances2nx(transmission_network_file,tn93_distance_file,new_threshold=False):
     '''
     Takes the distance csv produced by tn93 and generates a genetic cluster graph in networkx format. 
 
     The input new_threshold is either False, meaning use the same distance threshold used to create the tn93 file to identify edges, or is a float smaller than the tn93 distance threshold. The data will be altered to compute clusters with this smaller threshold. 
 
     ''' 
-    df = pd.read_csv(tn93_distance_file)
+    df = pd.read_csv(tn93_distance_file,transmission_network_file)
+    TN,_ = favitestransmission2nx(transmission_network_file)
     if new_threshold != False:
         df = df[df["Distance"] <= new_threshold]
     nodes1 = [int(s.split("|")[1]) for s in df["ID1"].values]
@@ -25,6 +26,8 @@ def tn93distances2nx(tn93_distance_file,new_threshold=False):
     GCN = nx.transitive_closure(GCN)
     GCN = GCN.to_undirected()
     GCN.remove_edges_from(nx.selfloop_edges(GCN))
+    # tn93 distance file does not have isolates
+    GCN.add_nodes_from(TN)
     return GCN
 
 
@@ -110,7 +113,7 @@ def initial_graph_from_configuration_model(config,number_of_nodes):
 
 def reinflate_networks(contacttxt,transmissiontxt,tn93dists,socialcsv):    
     cn,tn = favitescontacttransmission2nx(contacttxt,transmissiontxt)
-    gn = tn93distances2nx(tn93dists,new_threshold=False)
+    gn = tn93distances2nx(transmissiontxt,tn93dists,new_threshold=False)
     sn = pandas2nx(pd.read_csv(socialcsv))
     sn.add_nodes_from(cn.nodes())
     nx.set_node_attributes(sn,nx.get_node_attributes(cn,"hiv_status"),name="hiv_status")
