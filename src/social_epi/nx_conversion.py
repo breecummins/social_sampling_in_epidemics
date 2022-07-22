@@ -10,7 +10,7 @@ def tn93distances2nx(transmission_network_file,tn93_distance_file,new_threshold=
     The input new_threshold is either False, meaning use the same distance threshold used to create the tn93 file to identify edges, or is a float smaller than the tn93 distance threshold. The data will be altered to compute clusters with this smaller threshold. 
 
     ''' 
-    df = pd.read_csv(tn93_distance_file,transmission_network_file)
+    df = pd.read_csv(tn93_distance_file)
     TN,_ = favitestransmission2nx(transmission_network_file)
     if new_threshold != False:
         df = df[df["Distance"] <= new_threshold]

@@ -76,11 +76,17 @@ if __name__ == "__main__":
     # param_vals = [0.3,0.35,0.4,0.45,0.5]
     # param_type = "Social Acceptance Probability"
 
-    # sim 3
-    parentdir = "20220722_vary_CN_acceptance"
-    dirnames = ["prob_125","prob_150","prob_175","prob_200","prob_225"]
-    param_vals = [0.125,0.150,0.175,0.200,0.225]
-    param_type = "Sexual Contact Acceptance Probability"
+    # # sim 3
+    # parentdir = "20220722_vary_CN_acceptance"
+    # dirnames = ["prob_125","prob_150","prob_175","prob_200","prob_225"]
+    # param_vals = [0.125,0.150,0.175,0.200,0.225]
+    # param_type = "Sexual Contact Acceptance Probability"
+
+    # sim 4
+    parentdir = "20220722_vary_RDS_seeds"
+    dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
+    param_vals = [20,40,60,80,100]
+    param_type = "Number of RDS Seeds"
 
     # run simulations
     run_all(parentdir,dirnames)

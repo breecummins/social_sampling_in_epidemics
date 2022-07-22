@@ -9,9 +9,9 @@ def get_genetic_cluster_distribution(tn93_file,tn_file):
     gn = nxc.tn93distances2nx(tn93_file,new_threshold=False)
     tn,_ = nxc.favitestransmission2nx(tn_file)
     gn.add_nodes_from(tn)
-    print(gn.number_of_nodes())
+
     clusters = [len(c) for c in sorted(nx.connected_components(gn), key=len, reverse=True)]
-    distribution = {cs : clusters.count(cs) for cs in set(clusters)}
+    distribution = {int(cs) : clusters.count(cs) for cs in set(clusters)}
     return distribution
 
 
@@ -34,12 +34,15 @@ def summary_stats(distributions):
     return clusters
 
 
-def view_stats(clusters,upper_xlim):
-    num_outliers = sum([c for c in clusters if c > upper_xlim])
-    print("The number of clusters above size {} is {}.".format(upper_xlim,num_outliers))
+def view_stats(clusters,upper_xlim=None,upper_ylim=None):
     cluster_sizes,mean_occurrence = zip(*sorted(clusters.items()))
     plt.bar(cluster_sizes,mean_occurrence)
-    plt.xlim([0,upper_xlim])
+    if upper_xlim:
+        num_outliers = sum([v for c,v in clusters.items() if c > upper_xlim])
+        print("The mass of the distribution above size {} is {}.".format(upper_xlim,num_outliers))
+        plt.xlim([0,upper_xlim])
+    if upper_ylim:
+        plt.ylim([0,upper_ylim])
     plt.show()
 
 
@@ -64,6 +67,9 @@ def analyze(upper_xlim):
 
 
 if __name__ == "__main__":
-    clusters = analyze(60)
+    # clusters = analyze(60)
+    clusters = json.load(open("20220713_study_params/genetic_cluster_distribution.json"))
+    clusters = {int(c):v for c,v in clusters.items()}
+    view_stats(clusters,upper_xlim=250,upper_ylim=350)
 
 
