@@ -25,9 +25,7 @@ def run_each(rds_config,networks_folder):
     return all_results
 
 
-def run_all(parentdir,dirnames):
-    base = "~/GIT/social_sampling_in_epidemics/simulations/"
-    networks_folder = os.path.expanduser(os.path.join(base,"20220713_study_params/results_trimmed/JOB549929"))
+def run_all(base,networks_folder,parentdir,dirnames):
     results_folders = [os.path.expanduser(os.path.join(base,"{}/{}".format(parentdir,dname))) for dname in dirnames]
     for k,rf in enumerate(results_folders):
         starttime = time.time()
@@ -64,19 +62,23 @@ def visualize(stats_df,result_type="props"):
 
 
 if __name__ == "__main__":
-    # sim 1
-    parentdir = "vary_SN_size_20220722"
-    dirnames = ["size_200","size_400","size_600","size_800","size_1000"]
-    param_vals = [200, 400, 600, 800, 1000]
-    param_type = "Social Sample Size"
-    tag = "sn_samp_size"
+    # simulations on which to do sensitivity analysis
+    base = "~/GIT/social_sampling_in_epidemics/simulations/"
+    networks_folder = os.path.expanduser(os.path.join(base,"study_params_20220722/results_trimmed/JOB555814"))
 
-    # # sim 2
-    # parentdir = "vary_SN_acceptance_"
-    # dirnames = ["prob_30","prob_35","prob_40","prob_45","prob_50"]
-    # param_vals = [0.3,0.35,0.4,0.45,0.5]
-    # param_type = "Social Acceptance Probability"
-    # tag = "sn_accept_prob"
+    # # sim 1
+    # parentdir = "vary_SN_size_20220722"
+    # dirnames = ["size_200","size_400","size_600","size_800","size_1000"]
+    # param_vals = [200, 400, 600, 800, 1000]
+    # param_type = "Social Sample Size"
+    # tag = "sn_samp_size"
+
+    # sim 2
+    parentdir = "vary_SN_acceptance_20220725"
+    dirnames = ["prob_30","prob_35","prob_40","prob_45","prob_50"]
+    param_vals = [0.3,0.35,0.4,0.45,0.5]
+    param_type = "Social Acceptance Probability"
+    tag = "sn_accept_prob"
 
     # # sim 3
     # parentdir = "vary_CN_acceptance_"
@@ -93,8 +95,7 @@ if __name__ == "__main__":
     # tag = "rds_seeds"
 
     # run simulations
-    run_all(parentdir,dirnames)
-
+    run_all(base,networks_folder,parentdir,dirnames)
     # calc stats and plot results
     results_dirs = [os.path.join(parentdir,d) for d in dirnames]
     stats_df = make_stats_df(results_dirs,param_vals,param_type)
