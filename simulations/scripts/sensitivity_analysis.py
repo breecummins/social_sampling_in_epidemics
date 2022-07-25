@@ -73,19 +73,19 @@ if __name__ == "__main__":
     # param_type = "Social Sample Size"
     # tag = "sn_samp_size"
 
-    # sim 2
-    parentdir = "vary_SN_acceptance_20220725"
-    dirnames = ["prob_30","prob_35","prob_40","prob_45","prob_50"]
-    param_vals = [0.3,0.35,0.4,0.45,0.5]
-    param_type = "Social Acceptance Probability"
-    tag = "sn_accept_prob"
+    # # sim 2
+    # parentdir = "vary_SN_acceptance_20220725"
+    # dirnames = ["prob_30","prob_35","prob_40","prob_45","prob_50"]
+    # param_vals = [0.3,0.35,0.4,0.45,0.5]
+    # param_type = "Social Acceptance Probability"
+    # tag = "sn_accept_prob"
 
-    # # sim 3
-    # parentdir = "vary_CN_acceptance_"
-    # dirnames = ["prob_125","prob_150","prob_175","prob_200","prob_225"]
-    # param_vals = [0.125,0.150,0.175,0.200,0.225]
-    # param_type = "Sexual Contact Acceptance Probability"
-    # tag = "cn_accept_prob"
+    # sim 3
+    parentdir = "vary_CN_acceptance_20220725"
+    dirnames = ["prob_125","prob_150","prob_175","prob_200","prob_225"]
+    param_vals = [0.125,0.150,0.175,0.200,0.225]
+    param_type = "Sexual Contact Acceptance Probability"
+    tag = "cn_accept_prob"
 
     # # sim 4
     # parentdir = "vary_RDS_seeds_"
