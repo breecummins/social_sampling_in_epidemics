@@ -80,19 +80,19 @@ if __name__ == "__main__":
     # param_type = "Social Acceptance Probability"
     # tag = "sn_accept_prob"
 
-    # sim 3
-    parentdir = "vary_CN_acceptance_20220725"
-    dirnames = ["prob_125","prob_150","prob_175","prob_200","prob_225"]
-    param_vals = [0.125,0.150,0.175,0.200,0.225]
-    param_type = "Sexual Contact Acceptance Probability"
-    tag = "cn_accept_prob"
+    # # sim 3
+    # parentdir = "vary_CN_acceptance_20220725"
+    # dirnames = ["prob_125","prob_150","prob_175","prob_200","prob_225"]
+    # param_vals = [0.125,0.150,0.175,0.200,0.225]
+    # param_type = "Sexual Contact Acceptance Probability"
+    # tag = "cn_accept_prob"
 
-    # # sim 4
-    # parentdir = "vary_RDS_seeds_"
-    # dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
-    # param_vals = [20,40,60,80,100]
-    # param_type = "Number of RDS Seeds"
-    # tag = "rds_seeds"
+    # sim 4
+    parentdir = "vary_RDS_seeds_20220725"
+    dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
+    param_vals = [20,40,60,80,100]
+    param_type = "Number of RDS Seeds"
+    tag = "rds_seeds"
 
     # run simulations
     run_all(base,networks_folder,parentdir,dirnames)
