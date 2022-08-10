@@ -87,22 +87,29 @@ if __name__ == "__main__":
     # param_type = "Sexual Contact Acceptance Probability"
     # tag = "cn_accept_prob"
 
-    # sim 4
-    parentdir = "vary_RDS_seeds_20220725"
-    # dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
-    # param_vals = [20,40,60,80,100]
-    dirnames = ["seeds_30","seeds_50","seeds_70","seeds_90","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
-    param_vals = [30,50,70,90,110, 120, 130, 140, 150]
-    param_type = "Number of RDS Seeds"
-    tag = "rds_seeds"
-    all_param_vals = [20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150]
+    # # sim 4
+    # parentdir = "vary_RDS_seeds_20220725"
+    # # dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
+    # # param_vals = [20,40,60,80,100]
+    # dirnames = ["seeds_30","seeds_50","seeds_70","seeds_90","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
+    # param_vals = [30,50,70,90,110, 120, 130, 140, 150]
+    # param_type = "Number of RDS Seeds"
+    # tag = "rds_seeds"
+    # all_param_vals = [20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150]
+
+    # sim 5
+    parentdir = "vary_RDS_seeds_hivpos_20220810"
+    dirnames = ["seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
+    param_vals =  [20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150]
+    param_type = "Number of HIV+ RDS Seeds"
+    tag = "rds_seeds_hivpos"
 
     # run simulations
     run_all(base,networks_folder,parentdir,dirnames)
     # calc stats and plot results
     results_dirs = [os.path.join(parentdir,d) for d in dirnames]
-    # stats_df = make_stats_df(results_dirs,param_vals,param_type)
-    stats_df = make_stats_df(results_dirs,all_param_vals,param_type)
+    stats_df = make_stats_df(results_dirs,param_vals,param_type)
+    # stats_df = make_stats_df(results_dirs,all_param_vals,param_type)
     stats_df.to_csv(os.path.join(parentdir,"sensitivity_stats_{}.csv".format(tag)),index=False)
     visualize(stats_df,result_type="props")
     

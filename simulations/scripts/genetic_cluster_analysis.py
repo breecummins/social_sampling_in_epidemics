@@ -43,6 +43,18 @@ def view_stats(clusters,upper_xlim=None,upper_ylim=None):
     plt.show()
 
 
+def view_loglog(clusters,upper_xlim=None,upper_ylim=None):
+    cluster_sizes,mean_occurrence = zip(*sorted(clusters.items()))
+    plt.plot(np.log(cluster_sizes),np.log(mean_occurrence),marker="o",markersize=2)
+    if upper_xlim:
+        num_outliers = sum([v for c,v in clusters.items() if c > upper_xlim])
+        print("The mass of the distribution above size {} is {}.".format(upper_xlim,num_outliers))
+        plt.xlim([0,upper_xlim])
+    if upper_ylim:
+        plt.ylim([0,upper_ylim])
+    plt.show()
+
+
 def get_tn93_files(networks_folder):
     all_files = []
     for dir in os.listdir(networks_folder):
@@ -63,14 +75,15 @@ def analyze(networks_folder,savename,upper_xlim,upper_ylim):
 
 if __name__ == "__main__":
     # # compute cluster distribution
-    # base = os.path.expanduser("~/GIT/social_sampling_in_epidemics/simulations/study_params_20220722/")
-    # networks_folder = os.path.join(base,"results_trimmed/JOB555814")
+    base = os.path.expanduser("~/GIT/social_sampling_in_epidemics/simulations/study_params_20220722/")
     savename = os.path.join(base,"genetic_cluster_distribution.json")
+    # networks_folder = os.path.join(base,"results_trimmed/JOB555814")
     # clusters = analyze(networks_folder,savename,100,300)
 
     # graph only
     clusters = json.load(open(savename))
     clusters = {int(c):v for c,v in clusters.items()}
-    view_stats(clusters,upper_xlim=250,upper_ylim=None)
+    # view_stats(clusters,upper_xlim=250,upper_ylim=None)
+    view_loglog(clusters,upper_xlim=None,upper_ylim=None)
 
 
