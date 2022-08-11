@@ -66,16 +66,16 @@ if __name__ == "__main__":
     base = "~/GIT/social_sampling_in_epidemics/simulations/"
     networks_folder = os.path.expanduser(os.path.join(base,"study_params_20220722/results_trimmed/JOB555814"))
 
-    # # sim 1
-    # parentdir = "vary_SN_size_20220722"
-    # # dirnames = ["size_200","size_400","size_600","size_800","size_1000"]
-    # # param_vals = [200, 400, 600, 800, 1000]
-    # dirnames = ["size_300","size_500","size_650","size_700","size_750","size_850","size_900","size_950"]
-    # param_vals = [300,500,650,700,750,850,900,950]
-    # param_type = "Social Sample Size"
-    # tag = "sn_samp_size"
-    # all_param_vals = [200,300,400,500,600,650,700,750,800,850,900,950,1000]
-    # all_dir_names =  ["size_200","size_300","size_400","size_500","size_600","size_650","size_700","size_750","size_800","size_850","size_900","size_950","size_1000"]
+    # sim 1
+    parentdir = "vary_SN_size_20220722"
+    # dirnames = ["size_200","size_400","size_600","size_800","size_1000"]
+    # param_vals = [200, 400, 600, 800, 1000]
+    dirnames = ["size_300","size_500","size_650","size_700","size_750","size_850","size_900","size_950"]
+    param_vals = [300,500,650,700,750,850,900,950]
+    param_type = "Social Sample Size"
+    tag = "sn_samp_size"
+    all_param_vals = [200,300,400,500,600,650,700,750,800,850,900,950,1000]
+    all_dir_names =  ["size_200","size_300","size_400","size_500","size_600","size_650","size_700","size_750","size_800","size_850","size_900","size_950","size_1000"]
 
     # # sim 2
     # parentdir = "vary_SN_acceptance_20220725"
@@ -91,16 +91,16 @@ if __name__ == "__main__":
     # param_type = "Sexual Contact Acceptance Probability"
     # tag = "cn_accept_prob"
 
-    # # sim 4
-    parentdir = "vary_RDS_seeds_20220725"
-    # dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
-    # param_vals = [20,40,60,80,100]
-    dirnames = ["seeds_30","seeds_50","seeds_70","seeds_90","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
-    param_vals = [30,50,70,90,110, 120, 130, 140, 150]
-    param_type = "Number of RDS Seeds"
-    tag = "rds_seeds"
-    all_param_vals = [20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150]
-    all_dir_names = ["seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
+    # # # sim 4
+    # parentdir = "vary_RDS_seeds_20220725"
+    # # dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
+    # # param_vals = [20,40,60,80,100]
+    # dirnames = ["seeds_30","seeds_50","seeds_70","seeds_90","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
+    # param_vals = [30,50,70,90,110, 120, 130, 140, 150]
+    # param_type = "Number of RDS Seeds"
+    # tag = "rds_seeds"
+    # all_param_vals = [20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150]
+    # all_dir_names = ["seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
 
     # # sim 5
     # parentdir = "vary_RDS_seeds_hivpos_20220810"
