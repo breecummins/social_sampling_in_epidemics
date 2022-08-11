@@ -25,14 +25,14 @@ def run_each(rds_config,networks_folder):
     return all_results
 
 
-def run_all(base,networks_folder,parentdir,dirnames):
+def run_all(base,networks_folder,parentdir,dirnames,params):
     results_folders = [os.path.expanduser(os.path.join(base,"{}/{}".format(parentdir,dname))) for dname in dirnames]
-    for k,rf in enumerate(results_folders):
+    for k,rf in zip(params,results_folders):
         starttime = time.time()
         all_results = run_each(os.path.join(rf,"rds_config.json"),networks_folder)
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         all_results.to_csv(os.path.join(rf,"all_results_{}.csv".format(timestamp)),index=False)
-        print("250 RDS simulations {} complete, Time elapsed: {}".format(k+1,time.time()-starttime))
+        print("250 RDS simulations for param {} complete, Time elapsed: {}".format(k,time.time()-starttime))
 
 
 def make_stats_df(results_dirs,xvals,xlabel):
@@ -68,10 +68,14 @@ if __name__ == "__main__":
 
     # # sim 1
     # parentdir = "vary_SN_size_20220722"
-    # dirnames = ["size_200","size_400","size_600","size_800","size_1000"]
-    # param_vals = [200, 400, 600, 800, 1000]
+    # # dirnames = ["size_200","size_400","size_600","size_800","size_1000"]
+    # # param_vals = [200, 400, 600, 800, 1000]
+    # dirnames = ["size_300","size_500","size_650","size_700","size_750","size_850","size_900","size_950"]
+    # param_vals = [300,500,650,700,750,850,900,950]
     # param_type = "Social Sample Size"
     # tag = "sn_samp_size"
+    # all_param_vals = [200,300,400,500,600,650,700,750,800,850,900,950,1000]
+    # all_dir_names =  ["size_200","size_300","size_400","size_500","size_600","size_650","size_700","size_750","size_800","size_850","size_900","size_950","size_1000"]
 
     # # sim 2
     # parentdir = "vary_SN_acceptance_20220725"
@@ -88,28 +92,31 @@ if __name__ == "__main__":
     # tag = "cn_accept_prob"
 
     # # sim 4
-    # parentdir = "vary_RDS_seeds_20220725"
-    # # dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
-    # # param_vals = [20,40,60,80,100]
-    # dirnames = ["seeds_30","seeds_50","seeds_70","seeds_90","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
-    # param_vals = [30,50,70,90,110, 120, 130, 140, 150]
-    # param_type = "Number of RDS Seeds"
-    # tag = "rds_seeds"
-    # all_param_vals = [20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150]
+    parentdir = "vary_RDS_seeds_20220725"
+    # dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
+    # param_vals = [20,40,60,80,100]
+    dirnames = ["seeds_30","seeds_50","seeds_70","seeds_90","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
+    param_vals = [30,50,70,90,110, 120, 130, 140, 150]
+    param_type = "Number of RDS Seeds"
+    tag = "rds_seeds"
+    all_param_vals = [20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150]
+    all_dir_names = ["seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
 
-    # sim 5
-    parentdir = "vary_RDS_seeds_hivpos_20220810"
-    dirnames = ["seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
-    param_vals =  [20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150]
-    param_type = "Number of HIV+ RDS Seeds"
-    tag = "rds_seeds_hivpos"
+    # # sim 5
+    # parentdir = "vary_RDS_seeds_hivpos_20220810"
+    # dirnames = ["seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
+    # param_vals =  [20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150]
+    # param_type = "Number of HIV+ RDS Seeds"
+    # tag = "rds_seeds_hivpos"
 
-    # run simulations
-    run_all(base,networks_folder,parentdir,dirnames)
+    # # run simulations
+    # print("Working on {}".format(parentdir))
+    # run_all(base,networks_folder,parentdir,dirnames,param_vals)
     # calc stats and plot results
-    results_dirs = [os.path.join(parentdir,d) for d in dirnames]
-    stats_df = make_stats_df(results_dirs,param_vals,param_type)
-    # stats_df = make_stats_df(results_dirs,all_param_vals,param_type)
+    # results_dirs = [os.path.join(parentdir,d) for d in dirnames]
+    # stats_df = make_stats_df(results_dirs,param_vals,param_type)
+    results_dirs = [os.path.join(parentdir,d) for d in all_dir_names]
+    stats_df = make_stats_df(results_dirs,all_param_vals,param_type)
     stats_df.to_csv(os.path.join(parentdir,"sensitivity_stats_{}.csv".format(tag)),index=False)
     visualize(stats_df,result_type="props")
     
