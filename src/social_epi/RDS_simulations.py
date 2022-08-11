@@ -47,6 +47,14 @@ def RDS(net,waves,coupons,p,size,seeds,posseed,poswave):
     else:
         #Choose seeds from all nodes
         seed=rand.choices(list(range(n)),k=seeds)
+
+    # ########
+    # # test -- delete when done
+    # hiv = nx.get_node_attributes(net, "hiv_status")
+    # print("Number HIV+ seeds: {} out of {} seeds".format(len([x for x in seed if hiv[x]]),len(seed)))
+    # print("Total number HIV+ in population: {} out of 15,397".format(sum([y["hiv_status"] for _,y in net.nodes(data=True)] )))
+    # ##########
+
     #Store seeds as 0th wave
     sample[0]=seed
     #Add seed to list of sampled agents
@@ -187,7 +195,9 @@ def Assess(GN,TN,SN,CN,param_dict):
     keys=['SNwaves','CNwaves','SNcoupons','CNcoupons','SNprob','CNprob','SNsize','CNsize','SNseeds','CNseeds','SNposseed','CNposseed','SNposwave','CNposwave','savename']
     SNwaves,CNwaves,SNcoupons,CNcoupons,SNprob,CNprob,SNsize,CNsize,SNseeds,CNseeds,SNposseed,CNposseed,SNposwave,CNposwave,savename=[param_dict.get(key) for key in keys]
     
+    # print("Social")
     SNsampled=RDS(SN,SNwaves,SNcoupons,SNprob,SNsize,SNseeds,SNposseed,SNposwave)
+    # print("Contact")
     CNsampled=RDS(CN,CNwaves,CNcoupons,CNprob,CNsize,CNseeds,CNposseed,CNposwave)
     
     SNGNcount,SNGNtotal=CountPairs(GN,SNsampled)
