@@ -91,16 +91,18 @@ if __name__ == "__main__":
     # param_type = "Sexual Contact Acceptance Probability"
     # tag = "cn_accept_prob"
 
-    # # # sim 4
+    # # # # sim 4
     # parentdir = "vary_RDS_seeds_20220725"
-    # # dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
-    # # param_vals = [20,40,60,80,100]
-    # dirnames = ["seeds_30","seeds_50","seeds_70","seeds_90","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
-    # param_vals = [30,50,70,90,110, 120, 130, 140, 150]
+    # # # dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
+    # # # param_vals = [20,40,60,80,100]
+    # # dirnames = ["seeds_30","seeds_50","seeds_70","seeds_90","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
+    # # param_vals = [30,50,70,90,110, 120, 130, 140, 150]
+    # dirnames = ["seeds_10","seeds_200","seeds_300","seeds_400","seeds_500","seeds_600"]
+    # param_vals = [10, 200, 300, 400, 500, 600]
     # param_type = "Number of RDS Seeds"
     # tag = "rds_seeds"
-    # all_param_vals = [20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150]
-    # all_dir_names = ["seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
+    # all_param_vals = [10,20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150,200,300,400,500,600]
+    # all_dir_names = ["seeds_10","seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150","seeds_200","seeds_300","seeds_400","seeds_500","seeds_600"]
 
     # # sim 5
     # parentdir = "vary_RDS_seeds_hivpos_20220810"
@@ -112,7 +114,7 @@ if __name__ == "__main__":
     # # run simulations
     # print("Working on {}".format(parentdir))
     # run_all(base,networks_folder,parentdir,dirnames,param_vals)
-    # calc stats and plot results
+    # # calc stats and plot results
     # results_dirs = [os.path.join(parentdir,d) for d in dirnames]
     # stats_df = make_stats_df(results_dirs,param_vals,param_type)
     results_dirs = [os.path.join(parentdir,d) for d in all_dir_names]
