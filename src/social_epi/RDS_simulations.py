@@ -62,7 +62,7 @@ def RDS(net,waves,coupons,p,size,seeds,posseed,poswave):
     #Initilaize wave counter
     wave=0
     #Initilaize count of nodes sampled
-    nodes=1 
+    nodes=len(sampled) 
     #Check for waves still to be completed, unsampled nodes, nodes sampled in previous wave, and under target sample size
     while wave<waves and nodes<n and sample[wave]!=[] and nodes<size:
         #Increase wave counter
@@ -81,7 +81,7 @@ def RDS(net,waves,coupons,p,size,seeds,posseed,poswave):
             while used<coupons and nbrs!=[]:
                 #Sample one node from list of neighbors
                 node=rand.choice(nbrs)
-                #Probabilioty check on node participation
+                #Probability check on node participation
                 if np.random.uniform(0,1)<p:
                     #Add sampled node to list of nodes sampled during current wave
                     sample[wave]=sample[wave]+[node]
@@ -96,6 +96,8 @@ def RDS(net,waves,coupons,p,size,seeds,posseed,poswave):
                 else:
                     #Remove node from list of neighbors
                     nbrs.remove(node)
+            if nodes >= size:
+                break        
     #Check for continuing past final wave for HIV-positive agents
     if poswave:
         #Create network from last wave
@@ -214,6 +216,8 @@ def Assess(GN,TN,SN,CN,param_dict):
         "SN TN total": [SNTNtotal,],
         "CN TN count": [CNTNcount,],
         "CN TN total": [CNTNtotal,],
+        "SN sampled" : [len(SNsampled),],
+        "CN sampled" : [len(CNsampled),]
         }
     
     row=pd.DataFrame(row)
