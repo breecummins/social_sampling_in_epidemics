@@ -25,8 +25,8 @@ def run_each(rds_config,networks_folder):
     return all_results
 
 
-def run_all(base,networks_folder,parentdir,dirnames,params):
-    results_folders = [os.path.expanduser(os.path.join(base,"{}/{}".format(parentdir,dname))) for dname in dirnames]
+def run_all(networks_folder,parentdir,dirnames,params):
+    results_folders = [os.path.expanduser(os.path.join(parentdir,"{}".format(dname))) for dname in dirnames]
     for k,rf in zip(params,results_folders):
         starttime = time.time()
         all_results = run_each(os.path.join(rf,"rds_config.json"),networks_folder)
@@ -46,6 +46,8 @@ def make_stats_df(results_dirs,xvals,xlabel):
         return stats_df
 
     for dir,param in zip(results_dirs,xvals):
+        print(os.path.isdir(dir))
+        print((os.path.join(dir,"all_results*.csv")))
         resfile = glob.glob(os.path.join(dir,"all_results*.csv"))[0]
         df = pd.read_csv(resfile)
         for col,overlap in zip(["SN GN","CN GN","SN TN","CN TN"],["social->genetic","contact->genetic","social->transmission","contact->transmission"]):
@@ -61,65 +63,70 @@ def visualize(stats_df,result_type="props"):
     plt.show()
 
 
+def main(networks_folder,parentdir,dirnames,paramvals,param_type,tag,load=False):
+    if not load:
+        print("Working on {}".format(parentdir))
+        run_all(networks_folder,parentdir,dirnames,paramvals)
+        # calc stats and plot results
+        results_dirs = [os.path.join(parentdir,d) for d in dirnames]
+        stats_df = make_stats_df(results_dirs,paramvals,param_type)
+        stats_df.to_csv(os.path.join(parentdir,"sensitivity_stats_{}.csv".format(tag)),index=False)
+    else:
+        stats_df=pd.read_csv(os.path.join(parentdir,"sensitivity_stats_{}.csv".format(tag)))
+    visualize(stats_df,result_type="props")
+
+
+def sn_size(base,networks_folder):
+    parentdir = os.path.join(base,"sensitivity_analysis_20220825/vary_SN_size_20220825")
+    param_type = "Social Sample Size"
+    tag = "sn_samp_size"
+    paramvals = [200,300,400,500,600,650,700,750,800,850,900,950,1000]
+    dirnames =  ["size_200","size_300","size_400","size_500","size_600","size_650","size_700","size_750","size_800","size_850","size_900","size_950","size_1000"]
+    main(networks_folder,parentdir,dirnames,paramvals,param_type,tag,load=False)
+
+
+def sn_acceptance(base,networks_folder):
+    parentdir = os.path.join(base,"sensitivity_analysis_20220825/vary_SN_acceptance_20220829")
+    dirnames = ["prob_30","prob_35","prob_40","prob_45","prob_50"]
+    paramvals = [0.3,0.35,0.4,0.45,0.5]
+    param_type = "Social Acceptance Probability"
+    tag = "sn_accept_prob"
+    main(networks_folder,parentdir,dirnames,paramvals,param_type,tag,load=False)
+
+
+def cn_acceptance(base,networks_folder):
+    parentdir = os.path.join(base,"sensitivity_analysis_20220825/vary_CN_acceptance_20220829")
+    dirnames = ["prob_125","prob_150","prob_175","prob_200","prob_225"]
+    paramvals = [0.125,0.150,0.175,0.200,0.225]
+    param_type = "Sexual Contact Acceptance Probability"
+    tag = "cn_accept_prob"
+    main(networks_folder,parentdir,dirnames,paramvals,param_type,tag,load=False)
+
+
+def rds_seeds(base, networks_folder):
+    parentdir = os.path.join(base,"sensitivity_analysis_20220825/vary_rds_seeds_20220825")
+    dirnames = ["seeds_10","seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150","seeds_200","seeds_300","seeds_400","seeds_500","seeds_600"]
+    paramvals = [10,20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150,200,300,400,500,600]
+    param_type = "Number of RDS Seeds"
+    tag = "rds_seeds"
+    main(networks_folder,parentdir,dirnames,paramvals,param_type,tag,load=False)
+
+
+def rds_seeds_hivpos(base, networks_folder):
+    parentdir = os.path.join(base,"sensitivity_analysis_20220825/vary_rds_seeds_hivpos_20220826")
+    dirnames = ["seeds_10","seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150","seeds_200","seeds_300","seeds_400","seeds_500","seeds_600"]
+    paramvals = [10,20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150,200,300,400,500,600]
+    param_type = "Number of HIV+ RDS Seeds"
+    tag = "rds_seeds_hivpos"
+    main(networks_folder,parentdir,dirnames,paramvals,param_type,tag,load=False)
+
+
+
 if __name__ == "__main__":
     # simulations on which to do sensitivity analysis
-    base = "~/GIT/social_sampling_in_epidemics/simulations/"
-    networks_folder = os.path.expanduser(os.path.join(base,"study_params_20220722/results_trimmed/JOB555814"))
-
-    # # sim 1
-    # parentdir = "vary_SN_size_20220722"
-    # # dirnames = ["size_200","size_400","size_600","size_800","size_1000"]
-    # # param_vals = [200, 400, 600, 800, 1000]
-    # dirnames = ["size_300","size_500","size_650","size_700","size_750","size_850","size_900","size_950"]
-    # param_vals = [300,500,650,700,750,850,900,950]
-    # param_type = "Social Sample Size"
-    # tag = "sn_samp_size"
-    # all_param_vals = [200,300,400,500,600,650,700,750,800,850,900,950,1000]
-    # all_dir_names =  ["size_200","size_300","size_400","size_500","size_600","size_650","size_700","size_750","size_800","size_850","size_900","size_950","size_1000"]
-
-    # # sim 2
-    # parentdir = "vary_SN_acceptance_20220725"
-    # dirnames = ["prob_30","prob_35","prob_40","prob_45","prob_50"]
-    # param_vals = [0.3,0.35,0.4,0.45,0.5]
-    # param_type = "Social Acceptance Probability"
-    # tag = "sn_accept_prob"
-
-    # # sim 3
-    # parentdir = "vary_CN_acceptance_20220725"
-    # dirnames = ["prob_125","prob_150","prob_175","prob_200","prob_225"]
-    # param_vals = [0.125,0.150,0.175,0.200,0.225]
-    # param_type = "Sexual Contact Acceptance Probability"
-    # tag = "cn_accept_prob"
-
-    # # # sim 4
-    parentdir = "vary_RDS_seeds_20220725"
-    # # dirnames = ["seeds_20","seeds_40","seeds_60","seeds_80","seeds_100"]
-    # # param_vals = [20,40,60,80,100]
-    # dirnames = ["seeds_30","seeds_50","seeds_70","seeds_90","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
-    # param_vals = [30,50,70,90,110, 120, 130, 140, 150]
-    dirnames = ["seeds_10","seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150","seeds_200","seeds_300","seeds_400","seeds_500","seeds_600"]
-    param_vals = [10,20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150,200,300,400,500,600]
-    param_type = "Number of RDS Seeds"
-    tag = "rds_seeds_record_recruits"
- 
-    # # sim 5
-    # parentdir = "vary_RDS_seeds_hivpos_20220810"
-    # dirnames = ["seeds_20","seeds_30","seeds_40","seeds_50","seeds_60","seeds_70","seeds_80","seeds_90","seeds_100","seeds_110","seeds_120","seeds_130","seeds_140","seeds_150"]
-    # param_vals =  [20,30,40,50,60,70,80,90,100,110, 120, 130, 140, 150]
-    # param_type = "Number of HIV+ RDS Seeds"
-    # tag = "rds_seeds_hivpos"
-
-    # # run simulations
-    # print("Working on {}".format(parentdir))
-    # run_all(base,networks_folder,parentdir,dirnames,param_vals)
-    # # calc stats and plot results
-    # results_dirs = [os.path.join(parentdir,d) for d in dirnames]
-    # stats_df = make_stats_df(results_dirs,param_vals,param_type)
-    # # results_dirs = [os.path.join(parentdir,d) for d in all_dir_names]
-    # # stats_df = make_stats_df(results_dirs,all_param_vals,param_type)
-    # # stats_df.to_csv(os.path.join(parentdir,"sensitivity_stats_{}.csv".format(tag)),index=False)
-    stats_df=pd.read_csv(os.path.join(parentdir,"sensitivity_stats_{}.csv".format(tag)))
-    visualize(stats_df,result_type="props")
+    base = os.path.expanduser("~/GIT/social_sampling_in_epidemics/simulations/")
+    networks_folder = os.path.join(base,"study_params_20220822/results_trimmed/JOB643520")
+    cn_acceptance(base,networks_folder)
 
     
     
