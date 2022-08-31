@@ -206,6 +206,10 @@ def Assess(GN,TN,SN,CN,param_dict):
     CNGNcount,CNGNtotal=CountPairs(GN,CNsampled)
     SNTNcount,SNTNtotal=CountPairs(TN,SNsampled)
     CNTNcount,CNTNtotal=CountPairs(TN,CNsampled)
+
+    # how many sampled are HIV+
+    SN_num_hiv_pos = len([x for x in SNsampled if SN.nodes[x]['hiv_status']==1])
+    CN_num_hiv_pos = len([x for x in CNsampled if CN.nodes[x]['hiv_status']==1])
     
     row={
         "SN GN count": [SNGNcount,],
@@ -217,7 +221,9 @@ def Assess(GN,TN,SN,CN,param_dict):
         "CN TN count": [CNTNcount,],
         "CN TN total": [CNTNtotal,],
         "SN sampled" : [len(SNsampled),],
-        "CN sampled" : [len(CNsampled),]
+        "CN sampled" : [len(CNsampled),],
+        "SN HIV+"    : [SN_num_hiv_pos],
+        "CN HIV+"    : [CN_num_hiv_pos]
         }
     
     row=pd.DataFrame(row)
