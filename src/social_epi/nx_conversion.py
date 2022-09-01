@@ -21,12 +21,7 @@ def tn93distances2nx(transmission_network_file,tn93_distance_file,new_threshold=
     GCN = nx.Graph()
     GCN.add_nodes_from(nodes)
     GCN.add_edges_from(edges)
-    # make the genetic cluster network that is composed of a collection of disconnected cliques
-    GCN = GCN.to_directed()
-    GCN = nx.transitive_closure(GCN)
-    GCN = GCN.to_undirected()
-    GCN.remove_edges_from(nx.selfloop_edges(GCN))
-    # tn93 distance file does not have isolates
+    # tn93 distance file does not have isolates; add them
     GCN.add_nodes_from(TN)
     return GCN
 
