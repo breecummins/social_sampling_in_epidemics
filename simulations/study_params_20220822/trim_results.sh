@@ -11,7 +11,6 @@ do
    cp FAVITES_output*/GEMF_output/output.txt gemf_compartment_transitions.txt
    cp FAVITES_output*/GEMF_output/gemf2orig.json .
    cp FAVITES_output*/GEMF_output/README.TXT gemf_README.txt
-   python ../../../modify_status.py $PWD
    rm initial*
    rm overlap*
    rm *.json
