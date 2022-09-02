@@ -35,18 +35,19 @@ def make_stats_df(results_df):
         stats_df = stats_df.append({"overlap":overlap, "mean of props":np.mean(props),"std of props":np.std(props), "mean of raw count":np.mean(counts),"std of raw count":np.std(counts)},ignore_index=True)
         return stats_df
 
-    # for (numerator_col,denominator_col),overlap in zip([("SN GN count","SN GN total"),("CN GN count","CN GN total"),("SN TN count","SN TN total"),("CN TN count","CN TN total"),("SN HIV+","SN sampled"),("CN HIV+","CN sampled")],["social->genetic","contact->genetic","social->transmission","contact->transmission", "social HIV+", "contact HIV+"]):
-    for (numerator_col,denominator_col),overlap in zip([("SN HIV+","SN sampled"),("CN HIV+","CN sampled")],["social HIV+", "contact HIV+"]):
+    for (numerator_col,denominator_col),overlap in zip([("SN GN count","SN GN total"),("CN GN count","CN GN total"),("SN TN count","SN TN total"),("CN TN count","CN TN total"),("SN HIV+","SN sampled"),("CN HIV+","CN sampled")],["social->genetic","contact->genetic","social->transmission","contact->transmission", "social HIV+", "contact HIV+"]):
         stats_df = calc_stats(stats_df,results_df,numerator_col,denominator_col,overlap)
     return stats_df.sort_values(["overlap"])
 
 
 if __name__ == "__main__":
+    base = os.path.expanduser("~/GIT/social_sampling_in_epidemics/simulations/study_params_20220901/")
     networks_folder =  os.path.expanduser("~/GIT/social_sampling_in_epidemics/simulations/study_params_20220822/results_trimmed/JOB643520")
-    rds_config = os.path.expanduser("~/GIT/social_sampling_in_epidemics/simulations/study_params_202200901/rds_config.json")
+    rds_config = os.path.join(base,"rds_config.json")
     results = run_each(rds_config,networks_folder)
-    results.to_csv("all_summaries_20220901.csv",index=False)
+    results.to_csv(os.path.join(base,"all_summaries_20220901.csv"),index=False)
     stats_df = make_stats_df(results)
+    stats_df.to_csv(os.path.join(base,"stats_20220901.csv"),index=False)
     print(stats_df)
 
 
