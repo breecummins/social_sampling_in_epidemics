@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import sys,os,ast
 
 
@@ -23,21 +24,44 @@ def run(dirname):
     df["Current state"] = df["Current state"].map(compartment_mapper)
     df["Previous state"] = df["Previous state"].map(compartment_mapper)
     df["Node"] = df["Node"].map(node_mapper)
-    num_swaps = set([])
+    num_swaps = {}
+    times2chronic = []
+    final_df = pd.DataFrame()
     for node in df["Node"].values:
         temp = df.loc[df["Node"] == node]
-        num_swaps.add(len(temp))
+        N = len(temp)
+        if N in num_swaps:
+            num_swaps[N] += 1
+        else:
+            num_swaps[N] = 1
         T = max(temp["Time"].values)
-        df = df.drop(df.loc[(df["Node"] == node) & (df["Time"] < T)].index)
-    df.to_csv(os.path.join(dirname,"final_compartments.csv"),index=False)
-    print(sorted(num_swaps))
-    
+        if "Susceptible" in temp["Previous state"].values and ("Untreated chronic" in temp["Current state"].values or "Treated chronic" in temp["Current state"].values):
+            # print(temp)
+            Tm = min(temp["Time"].values)
+            temptemp = temp.loc[(temp["Previous state"].isin(["Untreated acute","Treated acute"])) & (temp["Current state"].isin(["Untreated chronic","Treated chronic"]))]
+            Tn = min(temptemp["Time"].values)
+            times2chronic.append(Tn-Tm)
+            # print(Tn-Tm)
+        final_df = pd.concat([final_df,temp.loc[(temp["Node"] == node) & (temp["Time"] == T)]])
+    final_df.to_csv(os.path.join(dirname,"final_compartments.csv"),index=False)
+    print(sorted(num_swaps.items()))
+    print(len(final_df))
+    print(sum(num_swaps.values()))
+    print((np.mean(times2chronic),np.std(times2chronic)))
+
+
+
+def count_compartments(dirname):
+    filename = os.path.join(dirname,"final_compartments.csv")
+    df = pd.read_csv(filename)
+    print(df["Current state"].value_counts())
 
 
 if __name__ == "__main__":
     # Need to add for loop over subdirs
     dirname = sys.argv[1]
     run(dirname)
+    count_compartments(dirname)
 
 
 
