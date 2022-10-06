@@ -30,6 +30,7 @@ def trigger(contact_config="contact_config.json"):
     print("Completed.")
     incidence = get_TN()
     print("Incidence = {}".format(incidence))
+    os.system("python ../../scripts/modify_status.py FAVITES_output/GEMF_output")
     return incidence
 
 

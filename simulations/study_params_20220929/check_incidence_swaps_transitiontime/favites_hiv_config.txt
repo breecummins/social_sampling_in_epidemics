@@ -55,7 +55,7 @@
     "hiv_a1_to_i1": 0.0*0.48, 
     "hiv_a2_to_a3": 0,
     "hiv_a2_to_d": 0,
-    "hiv_a2_to_i2": 0.025*0.48,
+    "hiv_a2_to_i2": 0.2*0.48,
     "hiv_a3_to_a4": 0,
     "hiv_a3_to_d": 0,
     "hiv_a3_to_i3": 0,
