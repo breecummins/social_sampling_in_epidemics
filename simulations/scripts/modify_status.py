@@ -2,13 +2,12 @@ import pandas as pd
 import numpy as np
 import sys,os,ast
 
-
 # See gemf_README.txt for this information
-column_mapper = {0 : "Time", 2 : "Node", 3: "Previous state", 4:"Current state", 6:"# susceptible",7:"# untreated acute",8:"# untreated chronic",11:"# treated acute",12:"# treated chronic"}
+column_mapper = {0 : "Time", 2 : "Node", 3: "Previous state", 4:"Current state", 6:"# susceptible",7:"# untreated acute",8:"# untreated chronic",11:"# treated acute",12:"# treated chronic",13:"# out-of-care"}
 
-# gemf_README.txt maps integer states to FAVITES compartments, i1, i2, a1, a2.
-# i1 = untreated acute, i2 = untreated chronic, a1 = treated acute, a2 = treated chronic
-compartment_mapper = {1 : "Susceptible", 2 : "Untreated acute", 3 : "Untreated chronic", 6 : "Treated acute", 7 : "Treated chronic"}
+# gemf_README.txt maps integer states to FAVITES compartments, i1, i2, a1, a2, a3.
+# i1 = untreated acute, i2 = untreated chronic, a1 = treated acute, a2 = treated chronic, a3 = out-of-care
+compartment_mapper = {1 : "Susceptible", 2 : "Untreated acute", 3 : "Untreated chronic", 6 : "Treated acute", 7 : "Treated chronic", 8 : "Out-of-care"}
 
 
 def run(dirname):
