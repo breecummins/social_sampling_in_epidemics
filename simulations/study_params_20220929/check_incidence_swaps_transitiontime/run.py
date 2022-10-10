@@ -17,7 +17,7 @@ def get_TN(pop=15397,seeds=5588):
     return incidence
 
 
-def trigger(contact_config="contact_config.json"):
+def trigger(favites_config="favites_hiv_config.txt",contact_config="contact_config.json"):
     cn_config = json.load(open(contact_config))
     print("Finding initial network.")
     initCN = nxc.initial_graph_from_configuration_model(cn_config, cn_config["population"])
@@ -26,7 +26,7 @@ def trigger(contact_config="contact_config.json"):
     initCN.to_csv(cn_fname,index=False)
     print("Completed.")
     print("Favites starting.",flush=True)
-    get_favites("favites_hiv_config.txt","1.2.10","run_favites_docker_with_inputs_implication.py")
+    get_favites(favites_config,"1.2.10","run_favites_docker_with_inputs_implication.py")
     print("Completed.")
     incidence = get_TN()
     print("Incidence = {}".format(incidence))
@@ -38,10 +38,9 @@ if __name__ == "__main__":
     import numpy as np
     incidence = []
     for _ in range(1):
-        incidence.append(trigger())
+        incidence.append(trigger("favites_hiv_config_new.txt"))
     statement1 = "Raw incidence: {}".format(["{:.03f}".format(x) for x in incidence])
     print(statement1)
     statement2 = "Incidence mean +/- std: {:.03f} +/- {:.03f}".format(np.mean(incidence),np.std(incidence))
     print(statement2)
     open("summary.txt","w").write("\n".join([statement1,statement2]))
-    

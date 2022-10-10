@@ -10,6 +10,10 @@ column_mapper = {0 : "Time", 2 : "Node", 3: "Previous state", 4:"Current state",
 compartment_mapper = {1 : "Susceptible", 2 : "Untreated acute", 3 : "Untreated chronic", 6 : "Treated acute", 7 : "Treated chronic", 8 : "Out-of-care"}
 
 
+def get_nontransitioned_individuals():
+    pass
+
+
 def run(dirname):
     '''
     This function makes a new csv that contains the status of each node at the end of the simulation.
@@ -61,11 +65,17 @@ def run(dirname):
     print("\n")
 
 
-def count_compartments(dirname):
+def compartment_counts(dirname):
     filename = os.path.join(dirname,"final_compartments.csv")
     df = pd.read_csv(filename)
-    print("Compartment distribution of (non-isolated) infected individuals at simulation end:")
-    print(df["Current state"].value_counts())
+    print("Compartment distribution of (non-isolated) individuals at simulation end:")
+    temp = df.loc[df["Time"]==max(df["Time"])]
+    print("# susceptible: {}".format(temp["# susceptible"].values[0]))
+    print("# out-of-care: {}".format(temp["# out-of-care"].values[0]))
+    print("# untreated chronic: {}".format(temp["# untreated chronic"].values[0]))
+    print("# treated chronic: {}".format(temp["# treated chronic"].values[0]))
+    print("# untreated acute: {}".format(temp["# untreated acute"].values[0]))
+    print("# treated acute: {}".format(temp["# treated acute"].values[0]))
 
 
 if __name__ == "__main__":
@@ -73,7 +83,7 @@ if __name__ == "__main__":
     # dirname is location of GEMF results from FAVITES
     dirname = sys.argv[1]
     run(dirname)
-    count_compartments(dirname)
+    compartment_counts(dirname)
 
 
 
