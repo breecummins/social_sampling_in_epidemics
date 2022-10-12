@@ -51,7 +51,7 @@
     "hiv_freq_i3": round(0.6*2918), 
     "hiv_freq_a1": 26, 
     "hiv_freq_a2": 0, 
-    "hiv_freq_a3": 2614
+    "hiv_freq_a3": 2614,
     "hiv_a1_to_a2": 8,
     "hiv_a1_to_d": 0,
     "hiv_a1_to_i1": 0.0, 
