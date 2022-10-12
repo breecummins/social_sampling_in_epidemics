@@ -38,7 +38,7 @@ if __name__ == "__main__":
     import numpy as np
     incidence = []
     for _ in range(1):
-        incidence.append(trigger("favites_hiv_config_new.txt"))
+        incidence.append(trigger("favites_hiv_config_7compartments.txt"))
     statement1 = "Raw incidence: {}".format(["{:.03f}".format(x) for x in incidence])
     print(statement1)
     statement2 = "Incidence mean +/- std: {:.03f} +/- {:.03f}".format(np.mean(incidence),np.std(incidence))

@@ -115,5 +115,20 @@ def reinflate_networks(contacttxt,transmissiontxt,tn93dists,socialcsv):
     return gn,tn,sn,cn
 
 
+def reinflate_networks_with_compartments(contacttxt,transmissiontxt,tn93dists,socialcsv,finalcompartmentscsv):    
+    cn,tn = favitescontacttransmission2nx(contacttxt,transmissiontxt)
+    gn = tn93distances2nx(transmissiontxt,tn93dists,new_threshold=False)
+    sn = pandas2nx(pd.read_csv(socialcsv))
+    sn.add_nodes_from(cn.nodes())
+    nx.set_node_attributes(sn,nx.get_node_attributes(cn,"hiv_status"),name="hiv_status")
+    fc = pd.read_csv(finalcompartmentscsv)
+    compartment_mapper = dict(zip(fc["Node"].values,fc["Current state"].values))
+    for i in range(cn.number_of_nodes()):
+        if i not in compartment_mapper:
+            compartment_mapper[i] = "N/A"
+    nx.set_node_attributes(sn,compartment_mapper,name="compartment")
+    nx.set_node_attributes(cn,compartment_mapper,name="compartment")
+    return gn,tn,sn,cn
+
 
 
