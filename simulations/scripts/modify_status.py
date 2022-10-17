@@ -3,15 +3,11 @@ import numpy as np
 import sys,os,ast
 
 # See gemf_README.txt for this information
-column_mapper = {0 : "Time", 2 : "Node", 3: "Previous state", 4:"Current state", 6:"# susceptible",7:"# untreated acute",8:"# untreated chronic",11:"# treated acute",12:"# treated chronic",13:"# out-of-care"}
+column_mapper = {0 : "Time", 2 : "Node", 3: "Previous state", 4:"Current state", 6:"# susceptible",7:"# untreated acute",8:"# untreated chronic", 9: "# out-of-care", 11:"# treated acute",12:"dummy",13: "# treated chronic"}
 
 # gemf_README.txt maps integer states to FAVITES compartments, i1, i2, a1, a2, a3.
 # i1 = untreated acute, i2 = untreated chronic, a1 = treated acute, a2 = treated chronic, a3 = out-of-care
-compartment_mapper = {1 : "Susceptible", 2 : "Untreated acute", 3 : "Untreated chronic", 6 : "Treated acute", 7 : "Treated chronic", 8 : "Out-of-care"}
-
-
-def get_nontransitioned_individuals():
-    pass
+compartment_mapper = {1 : "Susceptible", 2 : "Untreated acute", 3 : "Untreated chronic", 4 :"Out-of-care", 6 : "Treated acute", 7 : "dummy", 8 : "Treated chronic"}
 
 
 def run(dirname):
@@ -29,23 +25,17 @@ def run(dirname):
     df["Current state"] = df["Current state"].map(compartment_mapper)
     df["Previous state"] = df["Previous state"].map(compartment_mapper)
     df["Node"] = df["Node"].map(node_mapper)
-    num_swaps = {}
     times2chronic = []
     final_df = pd.DataFrame()
     compartment_transitions = {}
     nodes = pd.unique(df["Node"].values)
     for node in nodes:
         temp = df.loc[df["Node"] == node]
-        # N = len(temp)
-        # if N in num_swaps:
-        #     num_swaps[N] += 1
-        # else:
-        #     num_swaps[N] = 1
         T = max(temp["Time"].values)
         if "Susceptible" in temp["Previous state"].values and ("Untreated chronic" in temp["Current state"].values or "Treated chronic" in temp["Current state"].values):
             # print(temp)
             Tm = min(temp["Time"].values)
-            temptemp = temp.loc[(temp["Previous state"].isin(["Untreated acute","Treated acute"])) & (temp["Current state"].isin(["Untreated chronic","Treated chronic"]))]
+            temptemp = temp.loc[(temp["Previous state"].isin(["Untreated acute","Treated acute"])) & (temp["Current state"].isin(["Untreated chronic","Treated chronic","dummy"]))]
             Tn = min(temptemp["Time"].values)
             times2chronic.append(Tn-Tm)
             # print(Tn-Tm)
@@ -55,7 +45,9 @@ def run(dirname):
             compartment_transitions[key] = 1
         else:
             compartment_transitions[key] += 1
-        final_df = pd.concat([final_df,temp.loc[(temp["Node"] == node) & (temp["Time"] == T)]])
+        # Pick the latest status. There can be more than one status at the latest time because of the infinite transition rate from dummy (a2) compartment to treated chronic (a3) compartment. So remove dummy current status.
+        newrow = temp.loc[(temp["Node"] == node) & (temp["Time"] == T) & (temp["Current state"] != "dummy")]
+        final_df = pd.concat([final_df,newrow])
     final_df.to_csv(os.path.join(dirname,"final_transitions.csv"),index=False)
     truncated = final_df[["Node","Current state"]]
     
@@ -66,7 +58,7 @@ def run(dirname):
     compartments = pd.DataFrame(d,columns=["Node","Current state"])
     compartments["Node"] =compartments["Node"].map(node_mapper)
     compartments["Current state"] = compartments["Current state"].map(compartment_mapper)
-
+    
     # update the initial status with the final status for nodes that underwent transition
     compartments.set_index("Node",inplace=True)
     compartments.update(truncated.set_index("Node"))
@@ -85,16 +77,16 @@ def run(dirname):
 
 
 def compartment_counts(dirname):
-    filename = os.path.join(dirname,"final_transitions.csv")
-    df = pd.read_csv(filename)
-    print("Compartment distribution of (non-isolated) individuals at simulation end:")
-    temp = df.loc[df["Time"]==max(df["Time"])]
-    print("# susceptible: {}".format(temp["# susceptible"].values[0]))
-    print("# out-of-care: {}".format(temp["# out-of-care"].values[0]))
-    print("# untreated chronic: {}".format(temp["# untreated chronic"].values[0]))
-    print("# treated chronic: {}".format(temp["# treated chronic"].values[0]))
-    print("# untreated acute: {}".format(temp["# untreated acute"].values[0]))
-    print("# treated acute: {}".format(temp["# treated acute"].values[0]))
+    # filename = os.path.join(dirname,"final_transitions.csv")
+    # df = pd.read_csv(filename)
+    # print("Compartment distribution of (non-isolated) individuals at simulation end:")
+    # temp = df.loc[df["Time"]==max(df["Time"])]
+    # print("# susceptible: {}".format(temp["# susceptible"].values[0]))
+    # print("# out-of-care: {}".format(temp["# out-of-care"].values[0]))
+    # print("# untreated chronic: {}".format(temp["# untreated chronic"].values[0]))
+    # print("# treated chronic: {}".format(temp["# treated chronic"].values[0]))
+    # print("# untreated acute: {}".format(temp["# untreated acute"].values[0]))
+    # print("# treated acute: {}".format(temp["# treated acute"].values[0]))
     filename2 = os.path.join(dirname,"final_compartments.csv")
     df2 = pd.read_csv(filename2)
     print(df2["Current state"]. value_counts())

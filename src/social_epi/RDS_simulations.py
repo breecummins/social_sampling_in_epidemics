@@ -212,16 +212,16 @@ def Assess(GN,TN,SN,CN,param_dict):
     CN_num_hiv_pos = len([x for x in CNsampled if CN.nodes[x]['hiv_status']==1])
     
     row={
-        "SN GN count": [SNGNcount,],
-        "SN GN total": [SNGNtotal,],
-        "CN GN count": [CNGNcount,],
-        "CN GN total": [CNGNtotal,],
-        "SN TN count": [SNTNcount,],
-        "SN TN total": [SNTNtotal,],
-        "CN TN count": [CNTNcount,],
-        "CN TN total": [CNTNtotal,],
-        "SN sampled" : [len(SNsampled),],
-        "CN sampled" : [len(CNsampled),],
+        "SN GN count": [SNGNcount],
+        "SN GN total": [SNGNtotal],
+        "CN GN count": [CNGNcount],
+        "CN GN total": [CNGNtotal],
+        "SN TN count": [SNTNcount],
+        "SN TN total": [SNTNtotal],
+        "CN TN count": [CNTNcount],
+        "CN TN total": [CNTNtotal],
+        "SN sampled" : [SNsampled],
+        "CN sampled" : [CNsampled],
         "SN HIV+"    : [SN_num_hiv_pos],
         "CN HIV+"    : [CN_num_hiv_pos]
         }
