@@ -3,6 +3,7 @@ import subprocess
 import pandas as pd
 
 # cd results on cluster (tempest)
+# argument is unique save name identifier, e.g. the date
 
 files = subprocess.check_output('find "$PWD" | grep "summary"',shell=True).splitlines()
 filelist = [i.decode("utf-8") for i in files]
