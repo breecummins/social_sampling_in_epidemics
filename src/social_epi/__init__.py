@@ -1,1 +1,1 @@
-__all__ = ["sampling_social_networks","CCMnet_constr_py","nx_conversion","RDS_simulations"]
+__all__ = ["sampling_social_networks","CCMnet_constr_py","nx_conversion","RDS_simulations","assign_compartments"]
