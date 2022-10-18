@@ -1,5 +1,6 @@
 import os,json
 from social_epi import nx_conversion as nxc
+from social_epi import assign_compartments as acomp
 
 
 def get_favites(config_file,version,docker_script):
@@ -30,7 +31,8 @@ def trigger(favites_config="favites_hiv_config.txt",contact_config="contact_conf
     print("Completed.")
     incidence = get_TN()
     print("Incidence = {}".format(incidence))
-    os.system("python ../../scripts/modify_status.py FAVITES_output/GEMF_output")
+    acomp.run("FAVITES_output/GEMF_output")
+    acomp.compartment_counts("FAVITES_output/GEMF_output")
     return incidence
 
 
