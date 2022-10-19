@@ -1,6 +1,7 @@
+from xml.etree.ElementTree import QName
 import pandas as pd
 import numpy as np
-import sys,os,ast,json
+import sys,os,ast,json,glob
 
 # See gemf_README.txt for this information
 column_mapper = {0 : "Time", 2 : "Node", 3: "Previous state", 4:"Current state", 6:"# susceptible",7:"# untreated acute",8:"# untreated chronic", 9: "# out-of-care", 11:"# treated acute",12:"dummy",13: "# treated chronic"}
@@ -86,6 +87,35 @@ def run(dirname):
     print("\n")
 
 
+def add_compartment_counts_to_summary(dirname):
+    sumfile = glob.glob(os.path.join(dirname,"summary*.csv"))[0]
+    df = pd.read_csv(sumfile)
+    # df.drop(["SN Susceptible","SN Untreated acute","SN Treated acute","SN Untreated chronic","SN Treated chronic","CN Susceptible","CN Untreated acute","CN Treated acute","CN Untreated chronic","CN Treated chronic"],axis=1)
+    fcfile = os.path.join(dirname,"final_compartments.csv")
+    comp_df = pd.read_csv(fcfile)
+    social_sample = ast.literal_eval(df["SN sampled"].values[0])
+    contact_sample = ast.literal_eval(df["CN sampled"].values[0])
+    social_df = comp_df[comp_df["Node"].isin(social_sample)]
+    contact_df = comp_df[comp_df["Node"].isin(contact_sample)]
+    social_comps=social_df["Current state"].value_counts().to_dict()
+    for key,val in social_comps.items():
+        df["SN "+key] = [val]
+    all_comps = list(compartment_mapper.values())
+    all_comps.remove("dummy")
+    for k in all_comps:
+        if "SN "+k not in df.columns:
+            df["SN "+k] = [0]
+    print(df[df.columns[-6:]])
+    contact_comps = contact_df["Current state"].value_counts().to_dict()
+    for key,val in contact_comps.items():
+        df["CN "+key] = [val]
+    for k in all_comps:
+        if "CN "+k not in df.columns:
+            df["CN "+k] = [0]
+    print(df[df.columns[-6:]])
+    df.to_csv(sumfile,index=False)    
+
+
 def compartment_counts(dirname):
     filename2 = os.path.join(dirname,"final_compartments.csv")
     df2 = pd.read_csv(filename2)
@@ -99,11 +129,15 @@ def run_over_multiple_simulations(master_dir):
 
 
 if __name__ == "__main__":
-    # Need to add for loop over subdirs
-    # dirname is location of GEMF results from FAVITES
-    dirname = sys.argv[1]
-    run(dirname)
-    compartment_counts(dirname)
+    # # Need to add for loop over subdirs
+    # # dirname is location of GEMF results from FAVITES
+    # dirname = sys.argv[1]
+    # run(dirname)
+    # compartment_counts(dirname)
+
+    master_dir = "results_trimmed/JOB739669/"
+    for d in os.listdir(master_dir):
+        add_compartment_counts_to_summary(os.path.join(master_dir,d))
 
 
 
