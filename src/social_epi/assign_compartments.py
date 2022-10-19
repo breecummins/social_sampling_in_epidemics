@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import sys,os,ast
+import sys,os,ast,json
 
 # See gemf_README.txt for this information
 column_mapper = {0 : "Time", 2 : "Node", 3: "Previous state", 4:"Current state", 6:"# susceptible",7:"# untreated acute",8:"# untreated chronic", 9: "# out-of-care", 11:"# treated acute",12:"dummy",13: "# treated chronic"}
@@ -16,44 +16,53 @@ def run(dirname):
     '''
     # The node mapper translates GEMF node indices into the original node indices. The original node indices are stored as strings and so must be converted. The "json" file is not json -- it uses single quotes.
     node_mapper = {k:int(v) for k,v in ast.literal_eval(open(os.path.join(dirname,"gemf2orig.json")).read()).items()}
+    # The compartment transitions will have one of two names
     oldfilename = os.path.join(dirname,"output.txt")
     filename = os.path.join(dirname,"gemf_compartment_transitions.txt")
     os.system("cp {} {} 2>/dev/null".format(oldfilename,filename))
     df = pd.read_csv(filename,header=None,delim_whitespace=True)
+    # The column mapper gives real names to each column instead of integers
     df = df[[k for k in column_mapper.keys()]]
     df = df.rename(columns=column_mapper)
+    # The compartment mapper gives real names to each indexed compartment
     df["Current state"] = df["Current state"].map(compartment_mapper)
     df["Previous state"] = df["Previous state"].map(compartment_mapper)
+    # Apply node mapper to translate into original nodes
     df["Node"] = df["Node"].map(node_mapper)
     times2chronic = []
     final_df = pd.DataFrame()
     compartment_transitions = {}
     nodes = pd.unique(df["Node"].values)
+    # For each unique node, extract all compartment transitions and compute three things
     for node in nodes:
         temp = df.loc[df["Node"] == node]
         T = max(temp["Time"].values)
+        # Compute time from acute to chronic for the individual
         if "Susceptible" in temp["Previous state"].values and ("Untreated chronic" in temp["Current state"].values or "Treated chronic" in temp["Current state"].values):
-            # print(temp)
             Tm = min(temp["Time"].values)
             temptemp = temp.loc[(temp["Previous state"].isin(["Untreated acute","Treated acute"])) & (temp["Current state"].isin(["Untreated chronic","Treated chronic","dummy"]))]
             Tn = min(temptemp["Time"].values)
             times2chronic.append(Tn-Tm)
-            # print(Tn-Tm)
+        # Record the sequence of compartment swaps for the individual
         key = " -> ".join(temp["Previous state"].values)
         key = " -> ".join([key,temp["Current state"].values[-1]])
         if key not in compartment_transitions:
             compartment_transitions[key] = 1
         else:
             compartment_transitions[key] += 1
-        # Pick the latest status. There can be more than one status at the latest time because of the infinite transition rate from dummy (a2) compartment to treated chronic (a3) compartment. So remove dummy current status.
+        # Get the last compartment. There can be more than one compartment at the latest time because of the infinite transition rate from dummy (a2) compartment to treated chronic (a3) compartment. 
+        # So remove dummy current status.
         newrow = temp.loc[(temp["Node"] == node) & (temp["Time"] == T) & (temp["Current state"] != "dummy")]
         final_df = pd.concat([final_df,newrow])
     final_df.to_csv(os.path.join(dirname,"final_transitions.csv"),index=False)
     truncated = final_df[["Node","Current state"]]
     
     # add all the (non-isolated) nodes that never underwent transition
-    # status.txt has all the initial compartments of the nodes
-    sdf = pd.read_csv(os.path.join(dirname,"status.txt"),header=None)
+    # status.txt has all the initial compartments of the nodes, but may have been renamed
+    oldfilename = os.path.join(dirname,"status.txt")
+    filename = os.path.join(dirname,"gemf_initial_compartments.txt")
+    os.system("cp {} {} 2>/dev/null".format(oldfilename,filename))
+    sdf = pd.read_csv(os.path.join(dirname,"gemf_initial_compartments.txt"),header=None)
     d = [(k+1,int(v[0])) for k,v in enumerate(sdf.values)]
     compartments = pd.DataFrame(d,columns=["Node","Current state"])
     compartments["Node"] =compartments["Node"].map(node_mapper)
@@ -64,6 +73,7 @@ def run(dirname):
     compartments.update(truncated.set_index("Node"))
     compartments.reset_index(inplace=True)
     compartments.to_csv(os.path.join(dirname,"final_compartments.csv"),index=False)
+    json.dump(compartment_transitions,open(os.path.join(dirname,"compartment_transitions.json"),"w"))
 
     # print results
     # print("Distribution of number of swaps: {}".format(sorted(num_swaps.items())))
@@ -77,19 +87,15 @@ def run(dirname):
 
 
 def compartment_counts(dirname):
-    # filename = os.path.join(dirname,"final_transitions.csv")
-    # df = pd.read_csv(filename)
-    # print("Compartment distribution of (non-isolated) individuals at simulation end:")
-    # temp = df.loc[df["Time"]==max(df["Time"])]
-    # print("# susceptible: {}".format(temp["# susceptible"].values[0]))
-    # print("# out-of-care: {}".format(temp["# out-of-care"].values[0]))
-    # print("# untreated chronic: {}".format(temp["# untreated chronic"].values[0]))
-    # print("# treated chronic: {}".format(temp["# treated chronic"].values[0]))
-    # print("# untreated acute: {}".format(temp["# untreated acute"].values[0]))
-    # print("# treated acute: {}".format(temp["# treated acute"].values[0]))
     filename2 = os.path.join(dirname,"final_compartments.csv")
     df2 = pd.read_csv(filename2)
     print(df2["Current state"]. value_counts())
+
+
+def run_over_multiple_simulations(master_dir):
+    for d in os.listdir(master_dir):
+        if os.path.isdir(os.path.join(master_dir,d)):
+            run(os.path.join(master_dir,d))
 
 
 if __name__ == "__main__":
