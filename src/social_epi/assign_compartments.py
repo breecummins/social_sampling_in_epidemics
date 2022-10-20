@@ -1,4 +1,3 @@
-from xml.etree.ElementTree import QName
 import pandas as pd
 import numpy as np
 import sys,os,ast,json,glob
@@ -55,6 +54,13 @@ def run(dirname):
         # So remove dummy current status.
         newrow = temp.loc[(temp["Node"] == node) & (temp["Time"] == T) & (temp["Current state"] != "dummy")]
         final_df = pd.concat([final_df,newrow])
+        if newrow.empty:
+            changedrow = temp.loc[(temp["Node"] == node) & (temp["Time"] == T)]
+            if changedrow["Current state"] == "dummy":
+                changedrow["Current state"] = "Treated chronic"
+                final_df = pd.concat([final_df,changedrow])
+            else:
+                raise ValueError("Unrecognized compartment: {}".format(changedrow["Current state"]))
     final_df.to_csv(os.path.join(dirname,"final_transitions.csv"),index=False)
     truncated = final_df[["Node","Current state"]]
     
@@ -90,29 +96,22 @@ def run(dirname):
 def add_compartment_counts_to_summary(dirname):
     sumfile = glob.glob(os.path.join(dirname,"summary*.csv"))[0]
     df = pd.read_csv(sumfile)
-    # df.drop(["SN Susceptible","SN Untreated acute","SN Treated acute","SN Untreated chronic","SN Treated chronic","CN Susceptible","CN Untreated acute","CN Treated acute","CN Untreated chronic","CN Treated chronic"],axis=1)
+    df = df.drop(["SN Susceptible","SN Untreated acute","SN Treated acute","SN Untreated chronic","SN Treated chronic","CN Susceptible","CN Untreated acute","CN Treated acute","CN Untreated chronic","CN Treated chronic", "SN HIV+ Isolated","CN HIV+ Isolated"],axis=1)
     fcfile = os.path.join(dirname,"final_compartments.csv")
     comp_df = pd.read_csv(fcfile)
     social_sample = ast.literal_eval(df["SN sampled"].values[0])
     contact_sample = ast.literal_eval(df["CN sampled"].values[0])
     social_df = comp_df[comp_df["Node"].isin(social_sample)]
     contact_df = comp_df[comp_df["Node"].isin(contact_sample)]
-    social_comps=social_df["Current state"].value_counts().to_dict()
-    for key,val in social_comps.items():
-        df["SN "+key] = [val]
     all_comps = list(compartment_mapper.values())
     all_comps.remove("dummy")
-    for k in all_comps:
-        if "SN "+k not in df.columns:
-            df["SN "+k] = [0]
-    print(df[df.columns[-6:]])
+    social_comps=social_df["Current state"].value_counts().to_dict()
     contact_comps = contact_df["Current state"].value_counts().to_dict()
-    for key,val in contact_comps.items():
-        df["CN "+key] = [val]
-    for k in all_comps:
-        if "CN "+k not in df.columns:
-            df["CN "+k] = [0]
-    print(df[df.columns[-6:]])
+    for key in sorted(all_comps):
+        df["SN "+key] = [0] if key not in social_comps else [social_comps[key]]
+        df["CN "+key] = [0] if key not in contact_comps else [contact_comps[key]]
+    df["SN HIV+ Isolated"] = [df["SN HIV+"].values[0] - df["SN Out-of-care"].values[0] - df["SN Untreated acute"].values[0]- df["SN Treated acute"].values[0]- df["SN Untreated chronic"].values[0]- df["SN Treated chronic"].values[0]]
+    df["CN HIV+ Isolated"] = [df["CN HIV+"].values[0] - df["CN Out-of-care"].values[0] - df["CN Untreated acute"].values[0]- df["CN Treated acute"].values[0]- df["CN Untreated chronic"].values[0]- df["CN Treated chronic"].values[0]]
     df.to_csv(sumfile,index=False)    
 
 
