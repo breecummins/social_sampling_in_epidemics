@@ -2,7 +2,7 @@ import sys
 import subprocess
 import pandas as pd
 
-# cd results on cluster (tempest)
+# cd results on cluster (tempest) or results_trimmed locally
 # argument is unique save name identifier, e.g. the date
 
 files = subprocess.check_output('find "$PWD" | grep "summary"',shell=True).splitlines()
