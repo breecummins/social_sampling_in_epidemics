@@ -36,11 +36,22 @@ def trigger(favites_config="favites_hiv_config.txt",contact_config="contact_conf
     return incidence
 
 
+def trigger_without_ccm(favites_config="favites_hiv_config.txt"):
+    print("Favites starting.",flush=True)
+    get_favites(favites_config,"1.2.10","run_favites_docker_with_input_contact_network_implication.py")
+    print("Completed.")
+    incidence = get_TN()
+    print("Incidence = {}".format(incidence))
+    acomp.run("FAVITES_output/GEMF_output")
+    acomp.compartment_counts("FAVITES_output/GEMF_output")
+    return incidence
+
+
 if __name__ == "__main__":
     import numpy as np
     incidence = []
     for _ in range(1):
-        incidence.append(trigger("favites_hiv_config_7compartments.txt"))
+        incidence.append(trigger_without_ccm("favites_hiv_config_7compartments_contact_network.txt"))
     statement1 = "Raw incidence: {}".format(["{:.03f}".format(x) for x in incidence])
     print(statement1)
     statement2 = "Incidence mean +/- std: {:.03f} +/- {:.03f}".format(np.mean(incidence),np.std(incidence))

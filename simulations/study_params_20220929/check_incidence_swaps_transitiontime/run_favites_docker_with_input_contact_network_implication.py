@@ -174,10 +174,6 @@ COMMAND += ['-v',TMP_CONFIG.name+':/FAVITES_MOUNT/USER_CONFIG.JSON']  # mount co
 COMMAND += ['-v',OUTPUT_DIR+':/FAVITES_MOUNT/OUTPUT_DIR']             # mount output directory
 COMMAND += ['-v',TMP_CONFIG.name+':/USER_CONFIG.JSON']                # compatibility for older Docker images
 COMMAND += ['-v',OUTPUT_DIR+':/OUTPUT_DIR']
-###################
-# hack to access contact network file
-COMMAND += ['-v','/Users/b37v456/GIT/social_sampling_in_epidemics/simulations/study_params_20220929/check_incidence_swaps_transitiontime/contact_network.txt:/FAVITES_MOUNT/contact_network.txt']
-###################
 
 if CN_FILE is not None:                                               # mount contact network file (if need be)
     COMMAND += ['-v',CN_FILE+':'+CONFIG_DICT['contact_network_file']]

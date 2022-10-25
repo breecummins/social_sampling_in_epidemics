@@ -1,6 +1,6 @@
 {
-    "contact_network_file" : "/FAVITES_MOUNT/contact_network.txt",
-    "ContactNetworkGenerator": "FILE",
+    "contact_network_file" : "/Users/b37v456/GIT/social_sampling_in_epidemics/simulations/study_params_20220929/check_incidence_swaps_transitiontime/contact_network.txt",
+    "ContactNetworkGenerator": "File",
 
 
     "NodeEvolution": "VirusTreeSimulator",
@@ -43,7 +43,7 @@
     "TimeSample": "GranichFirstART",
 
     "TransmissionTimeSample": "HIVARTGranichGEMF", 
-    "end_time": 1,
+    "end_time": 0.5,
     "hiv_freq_ns": 0, "hiv_freq_i4": 0, "hiv_freq_a4": 0, "hiv_freq_d": 0,
     "hiv_freq_s": 15397-5588, 
     "hiv_freq_i1": 30, 
