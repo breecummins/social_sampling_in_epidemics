@@ -18,6 +18,7 @@ def tn93distances2nx(transmission_network_file,tn93_distance_file,new_threshold=
     nodes2 = [int(s.split("|")[1]) for s in df["ID2"].values]
     nodes = set(nodes1).union(set(nodes2))
     edges = zip(nodes1,nodes2)
+    edges = [sorted(e) for e in edges]
     GCN = nx.Graph()
     GCN.add_nodes_from(nodes)
     GCN.add_edges_from(edges)
@@ -41,7 +42,8 @@ def favitescontacttransmission2nx(contact_network_file,transmission_network_file
                 hiv=0
             CG.add_node(node,hiv_status=hiv)
         elif words[0] == "EDGE":
-            CG.add_edge(int(words[1]),int(words[2]))
+            edge = sorted([int(words[1]),int(words[2])])
+            CG.add_edge(edge[0],edge[1])
     return CG, TG
 
 
@@ -54,6 +56,7 @@ def favitestransmission2nx(transmission_network_file):
     # get rid of seed nodes where no transmission took place
     df = df[df[0] != "None"]
     edges = zip(list(map(int,df[0].values)),list(map(int,df[1].values)))
+    edges = [sorted(e) for e in edges]
     TG.add_edges_from(edges)
     return TG, nodes
 
