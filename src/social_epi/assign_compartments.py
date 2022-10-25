@@ -82,21 +82,21 @@ def run(dirname):
     compartments.to_csv(os.path.join(dirname,"final_compartments.csv"),index=False)
     json.dump(compartment_transitions,open(os.path.join(dirname,"compartment_transitions.json"),"w"))
 
-    # print results
-    # print("Distribution of number of swaps: {}".format(sorted(num_swaps.items())))
-    print("Number of individuals that underwent a compartment transition: {}".format(len(pd.unique(df["Node"].values))))
-    # print("Length of final transitions: {}".format(len(truncated)))
-    print("Mean and std of time from acute to chronic in years: {} +/- {}".format(np.mean(times2chronic),np.std(times2chronic)))
-    print("\nCompartment transition counts:")
-    for key,val in sorted(compartment_transitions.items()):
-        print("{}: {}".format(key,val))
-    print("\n")
+    # # print results
+    # # print("Distribution of number of swaps: {}".format(sorted(num_swaps.items())))
+    # print("Number of individuals that underwent a compartment transition: {}".format(len(pd.unique(df["Node"].values))))
+    # # print("Length of final transitions: {}".format(len(truncated)))
+    # print("Mean and std of time from acute to chronic in years: {} +/- {}".format(np.mean(times2chronic),np.std(times2chronic)))
+    # print("\nCompartment transition counts:")
+    # for key,val in sorted(compartment_transitions.items()):
+    #     print("{}: {}".format(key,val))
+    # print("\n")
 
 
 def add_compartment_counts_to_summary(dirname):
     sumfile = glob.glob(os.path.join(dirname,"summary*.csv"))[0]
     df = pd.read_csv(sumfile)
-    df = df.drop(["SN Susceptible","SN Untreated acute","SN Treated acute","SN Untreated chronic","SN Treated chronic","CN Susceptible","CN Untreated acute","CN Treated acute","CN Untreated chronic","CN Treated chronic", "SN HIV+ Isolated","CN HIV+ Isolated"],axis=1)
+    # df = df.drop(["SN Susceptible","SN Untreated acute","SN Treated acute","SN Untreated chronic","SN Treated chronic","CN Susceptible","CN Untreated acute","CN Treated acute","CN Untreated chronic","CN Treated chronic", "SN HIV+ Isolated","CN HIV+ Isolated"],axis=1)
     fcfile = os.path.join(dirname,"final_compartments.csv")
     comp_df = pd.read_csv(fcfile)
     social_sample = ast.literal_eval(df["SN sampled"].values[0])
@@ -137,6 +137,7 @@ if __name__ == "__main__":
     master_dir = "results_trimmed/JOB739669/"
     for d in os.listdir(master_dir):
         add_compartment_counts_to_summary(os.path.join(master_dir,d))
+        compartment_counts(os.path.join(master_dir,d))
 
 
 
