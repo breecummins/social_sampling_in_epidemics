@@ -141,7 +141,7 @@ def RDS(net,waves,coupons,p,size,seeds,posseed,poswave):
             #Generate list of HIV-positive nodes in last wave
             positive=[x for x,y in last.nodes(data=True) if y['hiv_status']==1]
                 
-    return sampled
+    return sampled, seed
 
 
 def CountPairs(net,sampled):
@@ -198,9 +198,9 @@ def Assess(GN,TN,SN,CN,param_dict):
     SNwaves,CNwaves,SNcoupons,CNcoupons,SNprob,CNprob,SNsize,CNsize,SNseeds,CNseeds,SNposseed,CNposseed,SNposwave,CNposwave,savename=[param_dict.get(key) for key in keys]
     
     # print("Social")
-    SNsampled=RDS(SN,SNwaves,SNcoupons,SNprob,SNsize,SNseeds,SNposseed,SNposwave)
+    SNsampled,SNseed=RDS(SN,SNwaves,SNcoupons,SNprob,SNsize,SNseeds,SNposseed,SNposwave)
     # print("Contact")
-    CNsampled=RDS(CN,CNwaves,CNcoupons,CNprob,CNsize,CNseeds,CNposseed,CNposwave)
+    CNsampled,CNseed=RDS(CN,CNwaves,CNcoupons,CNprob,CNsize,CNseeds,CNposseed,CNposwave)
     
     SNGNcount,SNGNtotal=CountPairs(GN,SNsampled)
     CNGNcount,CNGNtotal=CountPairs(GN,CNsampled)
@@ -222,6 +222,8 @@ def Assess(GN,TN,SN,CN,param_dict):
         "CN TN total": [CNTNtotal],
         "SN sampled" : [SNsampled],
         "CN sampled" : [CNsampled],
+        "SN seed"    : [SNseed],
+        "CN seed"    : [CNseed],
         "SN HIV+"    : [SN_num_hiv_pos],
         "CN HIV+"    : [CN_num_hiv_pos]
         }
