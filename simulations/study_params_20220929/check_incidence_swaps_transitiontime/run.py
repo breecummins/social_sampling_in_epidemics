@@ -9,6 +9,9 @@ def get_favites(config_file,version,docker_script):
     os.system("mv FAVITES_output FAVITES_output_old 2>/dev/null")
     os.system("python {} -u {} -c {}".format(docker_script,version,config_file))
     os.system("gunzip FAVITES_output/error_free_files/transmission_network.txt.gz")
+    os.system("gunzip FAVITES_output/error_free_files/sequence_data.fasta.gz")
+    os.system("tn93 -t {} -o {} {} >/dev/null 2>&1".format(0.015,"FAVITES_output/tn93_distances.csv","FAVITES_output/error_free_files/sequence_data.fasta"))
+
 
 
 def get_TN(pop=15397,seeds=5588):

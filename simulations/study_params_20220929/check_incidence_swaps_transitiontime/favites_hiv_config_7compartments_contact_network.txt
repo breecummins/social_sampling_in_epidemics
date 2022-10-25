@@ -43,7 +43,7 @@
     "TimeSample": "GranichFirstART",
 
     "TransmissionTimeSample": "HIVARTGranichGEMF", 
-    "end_time": 0.5,
+    "end_time": 1,
     "hiv_freq_ns": 0, "hiv_freq_i4": 0, "hiv_freq_a4": 0, "hiv_freq_d": 0,
     "hiv_freq_s": 15397-5588, 
     "hiv_freq_i1": 30, 

@@ -1,2 +1,2 @@
-Raw incidence: ['0.008']
-Incidence mean +/- std: 0.008 +/- 0.000
+Raw incidence: ['0.018']
+Incidence mean +/- std: 0.018 +/- 0.000
