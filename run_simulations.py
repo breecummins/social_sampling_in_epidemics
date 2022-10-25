@@ -2,6 +2,7 @@ import os, datetime,json
 from social_epi import nx_conversion as nxc
 from social_epi import sampling_social_networks as ssn
 from social_epi import RDS_simulations as rds
+from social_epi import assign_compartments as acomp
 
 
 def get_favites(config_file,results_dir,version,docker_script):
@@ -101,17 +102,24 @@ def chain(contact_config,favites_config,social_config,rds_config,master_results_
         newfile = os.path.basename(os.path.splitext(c)[0])+"_{}.json".format(timestamp)
         newpath = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,newfile)))
         os.system("cp {} {}".format(c,newpath))
+    gemf_dir = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,"FAVITES_output*/GEMF_output")))
+    acomp.run(gemf_dir)
+    os.system("cp {}/final* {}".format(gemf_dir,master_results_dir))
+    os.system("cp {}/gemf* {}".format(gemf_dir,master_results_dir))
+    os.system("cp {}/compartment_transitions.csv {}".format(gemf_dir,master_results_dir))
+    acomp.add_compartment_counts_to_summary(master_results_dir)
     # # bundle into dir
     # all_dir = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,"all_output")))
     # os.mkdir(all_dir)
     # os.system("ls ")
     # os.system("mv *{}* {}".format(timestamp,all_dir))
     # os.system("mv {} {}".format(all_dir,all_dir+"_{}".format(timestamp)))
-    return summary
+    return summaryfname
 
 
 if __name__ == "__main__":
     import sys
+    import pandas as pd
 
     '''
     Usage: 
@@ -129,12 +137,13 @@ if __name__ == "__main__":
     rc = sys.argv[4]
     rdir = sys.argv[5]
     if len(sys.argv) >7:
-        summary = chain(cc,fc,sc,rc,rdir, favites_version=sys.argv[6],docker_script=sys.argv[7])  
+        summaryfname = chain(cc,fc,sc,rc,rdir, favites_version=sys.argv[6],docker_script=sys.argv[7])  
     elif len(sys.argv) >6:
-        summary = chain(cc,fc,sc,rc,rdir, favites_version=sys.argv[6])  
+        summaryfname = chain(cc,fc,sc,rc,rdir, favites_version=sys.argv[6])  
     else:
-        summary = chain(cc,fc,sc,rc,rdir)
+        summaryfname = chain(cc,fc,sc,rc,rdir)
 
+    summary = pd.read_csv(summaryfname)
     print(summary)
 
 
