@@ -29,7 +29,7 @@ if __name__ == "__main__":
     master_dir = sys.argv[1]
     unique_id = sys.argv[2]
     
-    # get_final_compartments(master_dir)
+    get_final_compartments(master_dir)
     for d in os.listdir(master_dir):
         if os.path.isdir(d):
             acomp.add_compartment_counts_to_summary(os.path.join(master_dir,d))
