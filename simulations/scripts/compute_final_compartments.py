@@ -24,7 +24,7 @@ def gather_summaries(master_dir,unique_id):
 if __name__ == "__main__":
     # argument 1 is the directory with multiple tasks from the cluster, e.g.
     # results_trimmed/JOB743857
-    # argument is a unique summary file identifier, such as the date
+    # argument is a unique save all summaries file identifier, such as the date
 
     master_dir = sys.argv[1]
     unique_id = sys.argv[2]
