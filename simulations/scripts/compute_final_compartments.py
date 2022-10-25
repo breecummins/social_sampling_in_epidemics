@@ -32,7 +32,7 @@ if __name__ == "__main__":
     get_final_compartments(master_dir)
     for d in os.listdir(master_dir):
         if os.path.isdir(d):
-            acomp.add_compartment_counts_to_summary(os.path.join(master_dir,d))
+            # acomp.add_compartment_counts_to_summary(os.path.join(master_dir,d))
             acomp.compartment_counts(os.path.join(master_dir,d))
     gather_summaries(master_dir,unique_id)
 
