@@ -175,9 +175,8 @@ COMMAND += ['-v',OUTPUT_DIR+':/FAVITES_MOUNT/OUTPUT_DIR']             # mount ou
 COMMAND += ['-v',TMP_CONFIG.name+':/USER_CONFIG.JSON']                # compatibility for older Docker images
 COMMAND += ['-v',OUTPUT_DIR+':/OUTPUT_DIR']
 ###################
-# hack to access ccm config and supporting file
+# hack to access contact network file
 COMMAND += ['-v','/Users/b37v456/GIT/social_sampling_in_epidemics/simulations/study_params_20220929/check_incidence_swaps_transitiontime/contact_network.txt:/FAVITES_MOUNT/contact_network.txt']
-COMMAND += ['-v','/Users/b37v456/GIT/social_sampling_in_epidemics/simulations/study_params_20220929/check_incidence_swaps_transitiontime/initial_contact_graph.csv:/FAVITES_MOUNT/initial_contact_graph.csv']
 ###################
 
 if CN_FILE is not None:                                               # mount contact network file (if need be)
