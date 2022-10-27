@@ -18,12 +18,11 @@ def get_tn93_distances_TN_edges_only(transmission_network_file,fasta_file):
     df = df[df[0] != "None"]
     edges = zip(list(map(int,df[0].values)),list(map(int,df[1].values)))
     edges = [sorted(e) for e in edges]
-    print(len(edges))
+    print("Number of TN edges = {}".format(len(edges)))
     TG.add_edges_from(edges)
     nodes = TG.nodes()
     labels = ["|" +str(n)+ "|" for n in nodes]
-    print(len(labels))
-    print(labels)
+    print("Number of TN nodes = {} < {}".format(len(labels),2*len(edges)))
     # get sequence for each individual
     lines = open(fasta_file).readlines()
     IDseq = list(zip(lines[::2], lines[1::2]))
@@ -33,6 +32,16 @@ def get_tn93_distances_TN_edges_only(transmission_network_file,fasta_file):
             if any([l in id for l in labels]):
                 f.write(id)
                 f.write(seq)
+    idlabels = []
+    for i,_ in IDseq:
+        s = i.split("|")
+        idlabels.append("|" + s[1] + "|")
+    print("\nIntersection:\n")
+    I = set(labels).intersection(idlabels)
+    print(I)
+    print("Number of nodes in intersection: {}".format(len(I)))
+        
+                  
 
 
 if __name__ == "__main__":
