@@ -63,7 +63,7 @@ def get_rds(GN,TN,SN,CN,config_file,output_dir,timestamp=""):
     return results
 
 
-def chain(contact_config,favites_config,social_config,rds_config,master_results_dir,favites_version="latest",docker_script="src/tools/run_favites_docker.py"):
+def chain(contact_config,favites_config,social_config,rds_config,master_results_dir =".",favites_version="latest",docker_script="src/tools/run_favites_docker.py"):
     #FIXME: ideally the master_results_dir is passed to contact_initial and the savename 
     # in the contact_config is concatenated with it and inserted into the favites_config.
     # This currently requires an eval(open(favites_config).read()), which I am unwilling to do.
@@ -73,11 +73,12 @@ def chain(contact_config,favites_config,social_config,rds_config,master_results_
     #
     #FIXME Alternative: Write ccm config into template favites config on the fly.
     #
+    master_results_dir = os.path.abspath(os.path.expanduser(master_results_dir))
     cn_config = json.load(open(contact_config))
     print("Finding initial network.")
     initCN = nxc.initial_graph_from_configuration_model(cn_config, cn_config["population"])
     # FIXME: the following line supports hack to mount files in docker/singularity; remove "strip" when favites is updated
-    cn_fname = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,cn_config["G"].strip("/FAVITES_MOUNT/")))) 
+    cn_fname = os.path.join(master_results_dir,cn_config["G"].strip("/FAVITES_MOUNT/"))
     initCN.to_csv(cn_fname,index=False)
     ###############
     print("Completed.")
@@ -95,25 +96,19 @@ def chain(contact_config,favites_config,social_config,rds_config,master_results_
     print("Completed.")
     print("Saving results.")
     summaryfname = "summary_{}.csv".format(timestamp)
-    summarypath = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,summaryfname)))
+    summarypath = os.path.join(master_results_dir,summaryfname)
     summary.to_csv(summarypath,index=False)
     # save configs
     for c in [favites_config,contact_config,social_config,rds_config]:        
         newfile = os.path.basename(os.path.splitext(c)[0])+"_{}.json".format(timestamp)
-        newpath = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,newfile)))
+        newpath = os.path.join(master_results_dir,newfile)
         os.system("cp {} {}".format(c,newpath))
-    gemf_dir = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,"FAVITES_output*/GEMF_output")))
+    gemf_dir = os.path.join(master_results_dir,"FAVITES_output*/GEMF_output")
     acomp.run(gemf_dir)
     os.system("cp {}/final* {}".format(gemf_dir,master_results_dir))
     os.system("cp {}/gemf* {}".format(gemf_dir,master_results_dir))
     os.system("cp {}/compartment_transitions.csv {}".format(gemf_dir,master_results_dir))
     acomp.add_compartment_counts_to_summary(master_results_dir)
-    # # bundle into dir
-    # all_dir = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,"all_output")))
-    # os.mkdir(all_dir)
-    # os.system("ls ")
-    # os.system("mv *{}* {}".format(timestamp,all_dir))
-    # os.system("mv {} {}".format(all_dir,all_dir+"_{}".format(timestamp)))
     return summaryfname
 
 
