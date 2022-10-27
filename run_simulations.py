@@ -1,4 +1,4 @@
-import os, datetime,json
+import os, datetime,json,glob
 from social_epi import nx_conversion as nxc
 from social_epi import sampling_social_networks as ssn
 from social_epi import RDS_simulations as rds
@@ -103,11 +103,11 @@ def chain(contact_config,favites_config,social_config,rds_config,master_results_
         newfile = os.path.basename(os.path.splitext(c)[0])+"_{}.json".format(timestamp)
         newpath = os.path.join(master_results_dir,newfile)
         os.system("cp {} {}".format(c,newpath))
-    gemf_dir = os.path.join(master_results_dir,"FAVITES_output*/GEMF_output")
+    gemf_dir = glob.glob(os.path.join(master_results_dir,"FAVITES_output*/GEMF_output"))[0]
     acomp.run(gemf_dir)
     os.system("cp {}/final* {}".format(gemf_dir,master_results_dir))
     os.system("cp {}/gemf* {}".format(gemf_dir,master_results_dir))
-    os.system("cp {}/compartment_transitions.csv {}".format(gemf_dir,master_results_dir))
+    os.system("cp {}/compartment_transitions.json {}".format(gemf_dir,master_results_dir))
     acomp.add_compartment_counts_to_summary(master_results_dir)
     return summaryfname
 
