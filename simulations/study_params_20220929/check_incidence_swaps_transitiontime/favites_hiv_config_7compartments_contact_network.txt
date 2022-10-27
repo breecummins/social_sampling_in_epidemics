@@ -10,13 +10,15 @@
     "vts_n0": 1, 
     "vts_t50": -2, 
 
-    "NumBranchSample": "Single",
+    "TreeUnit": "TruncatedNormal",
+    "tree_rate_loc": 0.0008,
+    "tree_rate_max": float('inf'),
+    "tree_rate_min": 0,
+    "tree_rate_scale": 0.0005,
 
-    "NumTimeSample": "Once",
-
+    "SequenceEvolution": "GTRGammaSeqGen",
     "SeedSelection": "Random",
     "num_seeds": 5588,
-
     "SeedSequence": "VirusNonHomYuleHeightGTRGamma",
     "seed_height": 25,
     "seed_speciation_rate_func": "exp(-t**2)+1",
@@ -32,15 +34,13 @@
     "seqgen_c_to_t": 10.282617,
     "seqgen_g_to_t": 1.0,
     "seqgen_gamma_shape": 0.405129,
-    "seqgen_num_gamma_rate_categories": "",
-
-    "SequenceEvolution": "GTRGammaSeqGen",
-
+    "seqgen_num_gamma_rate_categories": "",   
+    
     "Sequencing": "Perfect",
-
     "SourceSample": "Random",
-
-    "TimeSample": "GranichFirstART",
+    "NumBranchSample": "Single",
+    "NumTimeSample": "Once",
+    "TimeSample": "End",
 
     "TransmissionTimeSample": "HIVARTGranichGEMF", 
     "end_time": 1,
@@ -87,12 +87,7 @@
     "hiv_s_to_i1_by_i4": 0,
     "hiv_s_to_i1_seed": 0,
 
-    "TreeUnit": "TruncatedNormal",
-    "tree_rate_loc": 0.0008,
-    "tree_rate_max": float('inf'),
-    "tree_rate_min": 0,
-    "tree_rate_scale": 0.0005,
-
+    
     "ContactNetwork": "NetworkX",
     "Driver": "Default",
     "EndCriteria": "GEMF",

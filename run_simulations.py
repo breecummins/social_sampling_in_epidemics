@@ -98,7 +98,7 @@ def chain(contact_config,favites_config,social_config,rds_config,master_results_
     summarypath = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,summaryfname)))
     summary.to_csv(summarypath,index=False)
     # save configs
-    for c in [favites_config,social_config,rds_config]:        
+    for c in [favites_config,contact_config,social_config,rds_config]:        
         newfile = os.path.basename(os.path.splitext(c)[0])+"_{}.json".format(timestamp)
         newpath = os.path.abspath(os.path.expanduser(os.path.join(master_results_dir,newfile)))
         os.system("cp {} {}".format(c,newpath))
