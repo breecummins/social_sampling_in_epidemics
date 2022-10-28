@@ -2,12 +2,7 @@
     "cn_config_file" : "/FAVITES_MOUNT/contact_config.json",
     "ContactNetworkGenerator": "CCMnetPy",
 
-    "NodeEvolution": "VirusTreeSimulator",
-    "vts_growthRate": 2.851904, 
-    "vts_max_attempts": 100,
-    "vts_model": "logistic", 
-    "vts_n0": 1, 
-    "vts_t50": -2, 
+    "NodeEvolution": "None", 
 
     "TreeUnit": "TruncatedNormal",
     "tree_rate_loc": 0.0008,
@@ -39,7 +34,7 @@
     "SourceSample": "Random",
     "NumBranchSample": "Single",
     "NumTimeSample": "Once",
-    "TimeSample": "End",
+    "TimeSample": "Infection",
 
     "TransmissionTimeSample": "HIVARTGranichGEMF", 
     "end_time": 6,
