@@ -41,7 +41,7 @@ def trigger(favites_config="favites_hiv_config.txt",contact_config="contact_conf
 
 def trigger_without_ccm(favites_config="favites_hiv_config.txt"):
     print("Favites starting.",flush=True)
-    get_favites(favites_config,"1.2.10","run_favites_docker_with_input_contact_network_implication.py")
+    get_favites(favites_config,"1.2.11","run_favites_docker_with_input_contact_network_implication.py")
     print("Completed.")
     incidence = get_TN()
     print("Incidence = {}".format(incidence))
