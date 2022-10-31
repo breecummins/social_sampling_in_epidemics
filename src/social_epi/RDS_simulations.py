@@ -188,14 +188,13 @@ def Assess(GN,TN,SN,CN,param_dict):
        CNposseed:  True or False, whether the seed for contact network should be HIV-positive, requires node attribute 'hiv_status' with values of 0 and 1 (positive) for CN
        SNposwave: True or False, whether recruitment continues past wave limit in social network for positive agents, requires node attribute 'hiv_status' with values of 0 and 1 (positive) for the social network
        CNposwave: True or False, whether recruitment continues past wave limit in contact network for positive agents, requires node attribute 'hiv_status' with values of 0 and 1 (positive) for the contact network 
-       savename: "path/to/filename" in which to save results
     
     Output:
        row:         row of dataframe is JSON format
     """
     
-    keys=['SNwaves','CNwaves','SNcoupons','CNcoupons','SNprob','CNprob','SNsize','CNsize','SNseeds','CNseeds','SNposseed','CNposseed','SNposwave','CNposwave','savename']
-    SNwaves,CNwaves,SNcoupons,CNcoupons,SNprob,CNprob,SNsize,CNsize,SNseeds,CNseeds,SNposseed,CNposseed,SNposwave,CNposwave,savename=[param_dict.get(key) for key in keys]
+    keys=['SNwaves','CNwaves','SNcoupons','CNcoupons','SNprob','CNprob','SNsize','CNsize','SNseeds','CNseeds','SNposseed','CNposseed','SNposwave','CNposwave']
+    SNwaves,CNwaves,SNcoupons,CNcoupons,SNprob,CNprob,SNsize,CNsize,SNseeds,CNseeds,SNposseed,CNposseed,SNposwave,CNposwave=[param_dict.get(key) for key in keys]
     
     # print("Social")
     SNsampled,SNseed=RDS(SN,SNwaves,SNcoupons,SNprob,SNsize,SNseeds,SNposseed,SNposwave)
@@ -208,8 +207,8 @@ def Assess(GN,TN,SN,CN,param_dict):
     CNTNcount,CNTNtotal=CountPairs(TN,CNsampled)
 
     # how many sampled are HIV+
-    SN_num_hiv_pos = len([x for x in SNsampled if SN.nodes[x]['hiv_status']==1])
-    CN_num_hiv_pos = len([x for x in CNsampled if CN.nodes[x]['hiv_status']==1])
+    SN_num_hiv_pos = len([x for x in SNsampled if SN.nodes[x]['hiv_status']==1 and x not in SNseed])
+    CN_num_hiv_pos = len([x for x in CNsampled if CN.nodes[x]['hiv_status']==1 and x not in CNseed])
     
     row={
         "SN GN count": [SNGNcount],

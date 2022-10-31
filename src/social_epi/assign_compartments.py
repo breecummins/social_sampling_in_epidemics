@@ -1,6 +1,5 @@
 import pandas as pd
-import numpy as np
-import sys,os,ast,json,glob
+import os,ast,json,glob
 
 # See gemf_README.txt for this information
 column_mapper = {0 : "Time", 2 : "Node", 3: "Previous state", 4:"Current state", 6:"# susceptible",7:"# untreated acute",8:"# untreated chronic", 9: "# out-of-care", 11:"# treated acute",12:"dummy",13: "# treated chronic"}
@@ -101,8 +100,12 @@ def add_compartment_counts_to_summary(dirname):
     comp_df = pd.read_csv(fcfile)
     social_sample = ast.literal_eval(df["SN sampled"].values[0])
     contact_sample = ast.literal_eval(df["CN sampled"].values[0])
-    social_df = comp_df[comp_df["Node"].isin(social_sample)]
-    contact_df = comp_df[comp_df["Node"].isin(contact_sample)]
+    social_seed = ast.literal_eval(df["SN seed"].values[0])
+    contact_seed = ast.literal_eval(df["CN seed"].values[0])
+    new_social_nodes = set(social_sample).difference(set(social_seed))
+    new_contact_nodes = set(contact_sample).difference(set(contact_seed))
+    social_df = comp_df[comp_df["Node"].isin(new_social_nodes)]
+    contact_df = comp_df[comp_df["Node"].isin(new_contact_nodes)]
     all_comps = list(compartment_mapper.values())
     all_comps.remove("dummy")
     social_comps=social_df["Current state"].value_counts().to_dict()
@@ -128,16 +131,16 @@ def run_over_multiple_simulations(master_dir):
 
 
 if __name__ == "__main__":
-    # # Need to add for loop over subdirs
-    # # dirname is location of GEMF results from FAVITES
-    # dirname = sys.argv[1]
-    # run(dirname)
+    import sys
+    # dirname is location of GEMF results from FAVITES
+    dirname = sys.argv[1]
+    run(dirname)
     # compartment_counts(dirname)
 
-    master_dir = "results_trimmed/JOB739669/"
-    for d in os.listdir(master_dir):
-        add_compartment_counts_to_summary(os.path.join(master_dir,d))
-        compartment_counts(os.path.join(master_dir,d))
+    # master_dir = "results_trimmed/JOB739669/"
+    # for d in os.listdir(master_dir):
+    #     add_compartment_counts_to_summary(os.path.join(master_dir,d))
+    #     compartment_counts(os.path.join(master_dir,d))
 
 
 
