@@ -92,11 +92,16 @@ def run(dirname):
     # print("\n")
 
 
-def add_compartment_counts_to_summary(dirname):
-    sumfile = glob.glob(os.path.join(dirname,"summary*.csv"))[0]
+def add_compartment_counts_to_summary(dirname="",summaryfile=None,finalcompfile=None):
+    if not summaryfile:
+        sumfile = glob.glob(os.path.join(dirname,"summary*.csv"))[0]
+    else:
+        sumfile = summaryfile
     df = pd.read_csv(sumfile)
-    # df = df.drop(["SN Susceptible","SN Untreated acute","SN Treated acute","SN Untreated chronic","SN Treated chronic","CN Susceptible","CN Untreated acute","CN Treated acute","CN Untreated chronic","CN Treated chronic", "SN HIV+ Isolated","CN HIV+ Isolated"],axis=1)
-    fcfile = os.path.join(dirname,"final_compartments.csv")
+    if not finalcompfile:
+        fcfile = os.path.join(dirname,"final_compartments.csv")
+    else:
+        fcfile = finalcompfile
     comp_df = pd.read_csv(fcfile)
     social_sample = ast.literal_eval(df["SN sampled"].values[0])
     contact_sample = ast.literal_eval(df["CN sampled"].values[0])

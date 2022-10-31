@@ -4,30 +4,32 @@ from social_epi import assign_compartments as acomp
 import os,glob,json,datetime
 
 
-def gen_results(contacttxt,transmissiontxt,tn93dists,socialcsv,rds_config,full_dir,save_dir):
+def gen_results(contacttxt,transmissiontxt,tn93dists,socialcsv,rds_config,finalcompcsv,save_dir,tag):
     gn,tn,sn,cn=nxc.reinflate_networks(contacttxt,transmissiontxt,tn93dists,socialcsv)
     rds_param_dict = json.load(open(rds_config))
     rds_results = rds.Assess(gn,tn,sn,cn,rds_param_dict)
     timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    savename = os.path.join(save_dir,"summary_{}.csv".format(timestamp))
-    print(savename)
+    savename = os.path.join(save_dir,"summary_{}_{}.csv".format(tag,timestamp))
     rds_results.to_csv(savename,index=False)
-    acomp.add_compartment_counts_to_summary(full_dir)
+    acomp.add_compartment_counts_to_summary(summaryfile=savename,finalcompfile=finalcompcsv)
 
 
 def run(rds_config,networks_folder,save_dir=None):
     networks_folder = os.path.abspath(networks_folder)
-    for dir in os.listdir(networks_folder):
-        full_dir = os.path.join(networks_folder,dir)
-        cfile = os.path.join(full_dir,"contact_network.txt")
-        tfile = os.path.join(full_dir,"transmission_network.txt")
-        tn93file = os.path.join(full_dir,"tn93_distances.csv")
-        sfile = glob.glob(os.path.join(full_dir,"social_network*.csv"))[0]
-        if not save_dir:
-            save_dir = full_dir
-        else:
-            save_dir = os.path.abspath(save_dir)
-        gen_results(cfile,tfile,tn93file,sfile,rds_config,full_dir,save_dir)
+    for d in os.listdir(networks_folder):
+        print(d)
+        full_dir = os.path.join(networks_folder,d)
+        if os.path.isdir(full_dir):
+            cfile = os.path.join(full_dir,"contact_network.txt")
+            tfile = os.path.join(full_dir,"transmission_network.txt")
+            tn93file = os.path.join(full_dir,"tn93_distances.csv")
+            sfile = glob.glob(os.path.join(full_dir,"social_network*.csv"))[0]
+            fcfile = os.path.join(full_dir,"final_compartments.csv")
+            if not save_dir:
+                save_dir = full_dir
+            else:
+                save_dir = os.path.abspath(save_dir)
+            gen_results(cfile,tfile,tn93file,sfile,rds_config,fcfile,save_dir,d)
     os.system("cp {} {}".format(rds_config,save_dir))
 
 
