@@ -9,6 +9,7 @@ from os import chdir,getcwd,makedirs,remove
 from os.path import abspath,expanduser,isdir,isfile
 from shutil import copyfile,move,rmtree
 from subprocess import call,check_output,CalledProcessError,DEVNULL,STDOUT
+import subprocess
 from sys import platform,stderr,stdout
 from warnings import warn
 from urllib.error import URLError
@@ -132,7 +133,12 @@ if not isfile(pulled_image):
     print("Pulling Docker image (%s)..." % tag, end=' '); stdout.flush()
     try:
         COMMAND = ['singularity','pull','--name',pulled_image,version]
-        check_output(COMMAND, stderr=DEVNULL)
+        # check_output(COMMAND, stderr=DEVNULL)
+        result = subprocess.run(COMMAND, shell=True, capture_output=True)
+        if result.stderr.startswith("FATAL:   Image file already exists:"):
+            pass
+        else:
+            raise RuntimeError("singularity pull command failed: %s" % ' '.join(COMMAND))
     except:
         raise RuntimeError("singularity pull command failed: %s" % ' '.join(COMMAND))
     chdir(orig_dir)
