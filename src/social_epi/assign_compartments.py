@@ -55,7 +55,7 @@ def run(dirname):
         final_df = pd.concat([final_df,newrow])
         if newrow.empty:
             changedrow = temp.loc[(temp["Node"] == node) & (temp["Time"] == T)]
-            if changedrow["Current state"] == "dummy":
+            if changedrow["Current state"].values[0] == "dummy":
                 changedrow["Current state"] = "Treated chronic"
                 final_df = pd.concat([final_df,changedrow])
             else:
