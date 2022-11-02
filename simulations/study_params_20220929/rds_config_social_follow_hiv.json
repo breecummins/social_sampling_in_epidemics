@@ -1,0 +1,16 @@
+{
+    "SNwaves" : 0,
+    "CNwaves" : 0,
+    "SNcoupons" : 15937,
+    "CNcoupons" : 15937,
+    "SNprob" : 0.394,
+    "CNprob" : 0.175,
+    "SNsize" : 15937,
+    "CNsize" : 15397,
+    "SNseeds" : 62,
+    "CNseeds" : 62,
+    "SNposseed" : true,
+    "CNposseed" : true,
+    "SNposwave" : true,
+    "CNposwave" : true
+}
