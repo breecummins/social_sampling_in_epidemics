@@ -63,43 +63,45 @@ def RDS(net,waves,coupons,p,size,seeds,posseed,poswave):
     wave=0
     #Initilaize count of nodes sampled
     nodes=len(sampled) 
-    #Check for waves still to be completed, unsampled nodes, nodes sampled in previous wave, and under target sample size
-    while wave<waves and nodes<n and sample[wave]!=[] and nodes<size:
-        #Increase wave counter
-        wave=wave+1
-        #Initialize list of nodes sampled in current wave
-        sample[wave]=[]
-        #loop through nodes sampled in previous wave
-        for i in sample[wave-1]:
-            #Identify neighbors of node i
-            nbrs=list(net[i])
-            #Remove already sampled nodes
-            nbrs=list(set(nbrs)-set(sampled)) 
-            #Initialize count of used coupons
-            used=0
-            #Check for unsampled nodes and remaining coupons
-            while used<coupons and nbrs!=[]:
-                #Sample one node from list of neighbors
-                node=rand.choice(nbrs)
-                #Probability check on node participation
-                if np.random.uniform(0,1)<p:
-                    #Add sampled node to list of nodes sampled during current wave
-                    sample[wave]=sample[wave]+[node]
-                    #Add sampled node to list of sampled nodes
-                    sampled=sampled+[node]
-                    #Increase counter for sampled nodes
-                    nodes=nodes+1
-                    #Increase count of used coupons
-                    used=used+1
-                    #Remove node from list of neighbors
-                    nbrs.remove(node)
-                else:
-                    #Remove node from list of neighbors
-                    nbrs.remove(node)
-            if nodes >= size:
-                break        
-    #Check for continuing past final wave for HIV-positive agents
-    if poswave:
+    #RDS sampling while following all individuals, not just HIV+
+    if waves and not poswave:
+        #Check for waves still to be completed, unsampled nodes, nodes sampled in previous wave, and under target sample size
+        while wave<waves and nodes<n and sample[wave]!=[] and nodes<size:
+            #Increase wave counter
+            wave=wave+1
+            #Initialize list of nodes sampled in current wave
+            sample[wave]=[]
+            #loop through nodes sampled in previous wave
+            for i in sample[wave-1]:
+                #Identify neighbors of node i
+                nbrs=list(net[i])
+                #Remove already sampled nodes
+                nbrs=list(set(nbrs)-set(sampled)) 
+                #Initialize count of used coupons
+                used=0
+                #Check for unsampled nodes and remaining coupons
+                while used<coupons and nbrs!=[]:
+                    #Sample one node from list of neighbors
+                    node=rand.choice(nbrs)
+                    #Probability check on node participation
+                    if np.random.uniform(0,1)<p:
+                        #Add sampled node to list of nodes sampled during current wave
+                        sample[wave]=sample[wave]+[node]
+                        #Add sampled node to list of sampled nodes
+                        sampled=sampled+[node]
+                        #Increase counter for sampled nodes
+                        nodes=nodes+1
+                        #Increase count of used coupons
+                        used=used+1
+                        #Remove node from list of neighbors
+                        nbrs.remove(node)
+                    else:
+                        #Remove node from list of neighbors
+                        nbrs.remove(node)
+                if nodes >= size:
+                    break        
+    #Contact tracing
+    elif poswave and not waves:
         #Create network from last wave
         last=nx.subgraph(net,sample[wave])
         #Generate list of HIV-positive nodes in last wave
@@ -121,7 +123,7 @@ def RDS(net,waves,coupons,p,size,seeds,posseed,poswave):
                 while used<coupons and nbrs!=[]:
                     #Sample one node from list of neighbors
                     node=rand.choice(nbrs)
-                    #Probabilioty check on node participation
+                    #Probability check on node participation
                     if np.random.uniform(0,1)<p:
                         #Add sampled node to list of nodes sampled during current wave
                         sample[wave]=sample[wave]+[node]
@@ -140,7 +142,52 @@ def RDS(net,waves,coupons,p,size,seeds,posseed,poswave):
             last=nx.subgraph(net,sample[wave])
             #Generate list of HIV-positive nodes in last wave
             positive=[x for x,y in last.nodes(data=True) if y['hiv_status']==1]
-                
+    #RDS sampling while following only HIV+ individuals (can be used for "limited" contact tracing)
+    elif poswave and waves:
+        #Create network from last wave
+        last=nx.subgraph(net,sample[wave])
+        #Generate list of HIV-positive nodes in last wave
+        positive=[x for x,y in last.nodes(data=True) if y['hiv_status']==1]
+        #Check for HIV-positive nodes in last wave, unsampled nodes, and nodes sampled in previous wave
+        while positive!=[] and nodes<n and sample[wave]!=[] and nodes<size and wave < waves:
+            wave=wave+1
+            #Initialize list of nodes sampled in current wave
+            sample[wave]=[]
+            #loop through nodes sampled in previous wave
+            for i in positive:
+                #Identify neighbors of node i
+                nbrs=list(net[i])
+                #Remove already sampled nodes
+                nbrs=list(set(nbrs)-set(sampled)) 
+                #Initialize count of used coupons
+                used=0
+                #Check for unsampled nodes and remaining coupons
+                while used<coupons and nbrs!=[]:
+                    #Sample one node from list of neighbors
+                    node=rand.choice(nbrs)
+                    #Probability check on node participation
+                    if np.random.uniform(0,1)<p:
+                        #Add sampled node to list of nodes sampled during current wave
+                        sample[wave]=sample[wave]+[node]
+                        #Add sampled node to list of sampled nodes
+                        sampled=sampled+[node]
+                        #Increase counter for sampled nodes
+                        nodes=nodes+1
+                        #Increase count of used coupons
+                        used=used+1
+                        #Remove node from list of neighbors
+                        nbrs.remove(node)
+                    else:
+                        #Remove node from list of neighbors
+                        nbrs.remove(node)
+                if nodes >= size:
+                    break        
+            #Create network from last wave
+            last=nx.subgraph(net,sample[wave])
+            #Generate list of HIV-positive nodes in last wave
+            positive=[x for x,y in last.nodes(data=True) if y['hiv_status']==1]
+    else:
+        raise ValueError("Must specify either nonzero number of waves or poswave = True")                
     return sampled, seed
 
 
