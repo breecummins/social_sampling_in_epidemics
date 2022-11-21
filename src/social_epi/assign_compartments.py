@@ -123,6 +123,30 @@ def add_compartment_counts_to_summary(dirname="",summaryfile=None,finalcompfile=
     df.to_csv(sumfile,index=False)    
 
 
+def add_compartment_counts_to_summary_df(df,fcfile):
+    # df is the pandas dataframe resulting from an rds run
+    # fcfile is the location of final_compartments.csv from the favites simulation
+    comp_df = pd.read_csv(fcfile)
+    social_sample = df["SN sampled"].values[0]
+    contact_sample = df["CN sampled"].values[0]
+    social_seed = df["SN seed"].values[0]
+    contact_seed = df["CN seed"].values[0]
+    new_social_nodes = set(social_sample).difference(set(social_seed))
+    new_contact_nodes = set(contact_sample).difference(set(contact_seed))
+    social_df = comp_df[comp_df["Node"].isin(new_social_nodes)]
+    contact_df = comp_df[comp_df["Node"].isin(new_contact_nodes)]
+    all_comps = list(compartment_mapper.values())
+    all_comps.remove("dummy")
+    social_comps=social_df["Current state"].value_counts().to_dict()
+    contact_comps = contact_df["Current state"].value_counts().to_dict()
+    for key in sorted(all_comps):
+        df["SN "+key] = [0] if key not in social_comps else [social_comps[key]]
+        df["CN "+key] = [0] if key not in contact_comps else [contact_comps[key]]
+    df["SN HIV+ Isolated"] = [df["SN HIV+"].values[0] - df["SN Out-of-care"].values[0] - df["SN Untreated acute"].values[0]- df["SN Treated acute"].values[0]- df["SN Untreated chronic"].values[0]- df["SN Treated chronic"].values[0]]
+    df["CN HIV+ Isolated"] = [df["CN HIV+"].values[0] - df["CN Out-of-care"].values[0] - df["CN Untreated acute"].values[0]- df["CN Treated acute"].values[0]- df["CN Untreated chronic"].values[0]- df["CN Treated chronic"].values[0]]
+    return df    
+
+
 def compartment_counts(dirname):
     filename2 = os.path.join(dirname,"final_compartments.csv")
     df2 = pd.read_csv(filename2)

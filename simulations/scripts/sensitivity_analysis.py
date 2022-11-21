@@ -1,25 +1,29 @@
 from social_epi import nx_conversion as nxc
 from social_epi import RDS_simulations as rds
+from social_epi import assign_compartments as acomp
 import json, os, glob, datetime, time
 import pandas as pd
 
 
-def gen_results(contacttxt,transmissiontxt,tn93dists,socialcsv,rds_config):
+def gen_results(contacttxt,transmissiontxt,tn93dists,socialcsv,finalcompscsv,rds_config):
     gn,tn,sn,cn=nxc.reinflate_networks(contacttxt,transmissiontxt,tn93dists,socialcsv)
     rds_param_dict = json.load(open(rds_config))
-    return rds.Assess(gn,tn,sn,cn,rds_param_dict)
+    summary = rds.Assess(gn,tn,sn,cn,rds_param_dict)    
+    return acomp.add_compartment_counts_to_summary_df(summary,finalcompscsv)
 
 
 def run_each(rds_config,networks_folder):
     all_results = pd.DataFrame()
-    for dir in os.listdir(networks_folder):
-        full_dir = os.path.join(networks_folder,dir)
-        cfile = os.path.join(full_dir,"contact_network.txt")
-        tfile = os.path.join(full_dir,"transmission_network.txt")
-        tn93file = os.path.join(full_dir,"tn93_distances.csv")
-        sfile = glob.glob(os.path.join(full_dir,"social_network*.csv"))[0]
-        results = gen_results(cfile,tfile,tn93file,sfile,rds_config)
-        all_results = pd.concat([all_results,results])    
+    for d in os.listdir(networks_folder):
+        full_dir = os.path.join(networks_folder,d)
+        if os.path.isdir(full_dir):
+            cfile = os.path.join(full_dir,"contact_network.txt")
+            tfile = os.path.join(full_dir,"transmission_network.txt")
+            tn93file = os.path.join(full_dir,"tn93_distances.csv")
+            sfile = glob.glob(os.path.join(full_dir,"social_network*.csv"))[0]
+            fcfile = os.path.join(full_dir,"final_compartments.csv")
+            results = gen_results(cfile,tfile,tn93file,sfile,fcfile,rds_config)
+            all_results = pd.concat([all_results,results])    
     return all_results
 
 
@@ -28,8 +32,8 @@ def run_all(networks_folder,sensitivity_folders):
         starttime = time.time()
         all_results = run_each(os.path.join(sf,"rds_config.json"),networks_folder)
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-        all_results.to_csv(os.path.join(sf,"all_results_{}.csv".format(timestamp)),index=False)
-        print("250 RDS simulations for folder {} complete, Time elapsed: {}".format(sf,time.time()-starttime))
+        all_results.to_csv(os.path.join(sf,"all_summaries_{}.csv".format(timestamp)),index=False)
+        print("250 RDS simulations for folder {} complete, Time elapsed: {:.1f} minutes".format(sf,(time.time()-starttime)/60))
 
 
 if __name__ == "__main__":
