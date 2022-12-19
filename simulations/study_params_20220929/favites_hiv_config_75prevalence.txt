@@ -17,7 +17,6 @@
 
     "SequenceEvolution": "GTRGammaSeqGen",
     "SeedSelection": "Random",
-    "num_seeds": 5588,
     "SeedSequence": "VirusNonHomYuleHeightGTRGamma",
     "seed_height": 25,
     "seed_speciation_rate_func": "exp(-t**2)+1",
@@ -44,6 +43,7 @@
     "TransmissionTimeSample": "HIVARTGranichGEMF", 
     "end_time": 6,
     "hiv_freq_ns": 0, "hiv_freq_i4": 0, "hiv_freq_a4": 0, "hiv_freq_d": 0,
+    "num_seeds": round(5588*0.75) - 1,
     "hiv_freq_s": 15397-round(5588*0.75) - 1, 
     "hiv_freq_i1": round(30*0.75), 
     "hiv_freq_i2": round(0.4*2918*0.75),
