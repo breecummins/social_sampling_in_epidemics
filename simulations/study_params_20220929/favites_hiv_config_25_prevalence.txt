@@ -44,7 +44,7 @@
     "end_time": 6,
     "hiv_freq_ns": 0, "hiv_freq_i4": 0, "hiv_freq_a4": 0, "hiv_freq_d": 0,
     "num_seeds": round(5588*0.25) + 1,
-    "hiv_freq_s": 15397-round(5588*0.25) + 1, 
+    "hiv_freq_s": 15397-round(5588*0.25) - 1, 
     "hiv_freq_i1": round(30*0.25), 
     "hiv_freq_i2": round(0.4*2918*0.25),
     "hiv_freq_i3": round(0.6*2918*0.25), 
