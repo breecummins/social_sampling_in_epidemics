@@ -19,3 +19,19 @@ All figures used `contact_config.json` and `sampling_social_networks_config.json
 
 * Supplementary Figure S1: `favites_hiv_config_infection.txt`.
 
+## Compartmental Model
+
+The compartments in the compartmental model in the paper are described as susceptible, acute undiagnosed, chronic undiagnosed, acute treated, chronic treated, and out-of-care. The correspondence between these compartments and FAVITES parameter notation is as follows.
+
+| Model compartment   | FAVITES compartment |
+|---------------------|---------------------|
+| Susceptible         | `s`                 |
+| Acute undiagnosed   | `i1`                |
+| Chronic undiagnosed | `i2`                |
+| Out-of-care         | `i3`                |
+| Acute treated       | `a1`                |
+| Dummy compartment   | `a2`                |
+| Chronic treated     | `a3`                |
+
+The dummy compartment `a2` is included due to limitations in the connections between compartments permitted by FAVITES. Compartments `i2` and `a1` both transition into `a2`, which then has an infinite transition rate into compartment `i3`.
+
