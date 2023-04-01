@@ -1,3 +1,6 @@
+from social_epi import nx_conversion as nxc
+from social_epi import assign_compartments as acomp
+import os,json
 import networkx as nx
 import pandas as pd
 import numpy as np
@@ -277,3 +280,12 @@ def Assess(GN,TN,SN,CN,param_dict):
     row=pd.DataFrame(row)
     
     return row
+
+
+def run_from_files(contacttxt,transmissiontxt,tn93dists,socialcsv,rds_config):
+    gn,tn,sn,cn=nxc.reinflate_networks(contacttxt,transmissiontxt,tn93dists,socialcsv)
+    rds_param_dict = json.load(open(rds_config))
+    rds_results = Assess(gn,tn,sn,cn,rds_param_dict)
+    return rds_results
+    
+
