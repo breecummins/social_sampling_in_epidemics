@@ -57,7 +57,7 @@ The output is a `csv` file containing the column names `SN GN count`, `SN GN tot
 
 
 
- ## Generating contact network, transmission network, and genetic sequences
+ ## Generating contact network, transmission network, and genetic sequences from an epidemic compartmental model
 
  To run FAVITES, create a configuration file (an example is `tests/favites_hiv_test_config.txt` or see multiple versions in `simulations/study_parameters_20220929`). General documentation for FAVITES is here: https://github.com/niemasd/FAVITES/wiki, and is particularly good at explaining the parameters for the genetic sequence evolutionary model. The following lists parameters that were especially important during our simulations of an HIV epidemic.
 
@@ -150,7 +150,7 @@ SNdf.to_csv("social_network.csv",index=False)
 }
  ```
  
- ## Simulating Respondent-Driven Sampling
+ ## Simulating peer recruitment strategies
 
 To simulate peer recruitment strategies on the generated social and contact networks, write a configuration file and do
 
