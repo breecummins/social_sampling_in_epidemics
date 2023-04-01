@@ -12,6 +12,5 @@
     "SNposseed" : false,
     "CNposseed" : true,
     "SNposwave" : false,
-    "CNposwave" : true,
-    "savename" : "rds_sim.json"
+    "CNposwave" : true
 }
