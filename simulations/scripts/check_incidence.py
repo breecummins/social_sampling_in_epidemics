@@ -2,6 +2,8 @@ import ast,os,json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import PercentFormatter
+
 
 
 def compute_incidence(dirname, time_in_years, total_pop, num_seeds):
@@ -83,29 +85,30 @@ def plot_stats(means,stds,sim_years,saveplt):
     plt.ylabel('Incidence rates')
     plt.grid(True, axis='y')
     plt.bar(x, means, yerr=stds, capsize=8, alpha=0.6, color='b')
+    plt.gca().yaxis.set_major_formatter(PercentFormatter(1))
     plt.savefig(saveplt)
     plt.show()
 
 
 if __name__ == "__main__":
 
-    # from configuration file
-    total_pop = 15397 
-    num_seeds = 5588
+    # # from configuration file
+    # total_pop = 15397 
+    # num_seeds = 5588
     sim_years = 6
 
-    # get incidences from 250 simulations
-    incidences = []
-    for k in range(1,251):
-        print("TASK{}".format(k))
-        fname = "study_params_20220929/results_trimmed_end/JOB758832/TASK{}".format(k)
-        if os.path.exists(fname):
-            i = compute_incidence(fname,sim_years,total_pop,num_seeds)
-            if len(i) > 0:
-                incidences.append(i)
+    # # get incidences from 250 simulations
+    # incidences = []
+    # for k in range(1,251):
+    #     print("TASK{}".format(k))
+    #     fname = "study_params_20220929/results_trimmed_end/JOB758832/TASK{}".format(k)
+    #     if os.path.exists(fname):
+    #         i = compute_incidence(fname,sim_years,total_pop,num_seeds)
+    #         if len(i) > 0:
+    #             incidences.append(i)
 
     savename = "~/Desktop/incidences_stats.json"
-    compute_stats(incidences,savename)
+    # compute_stats(incidences,savename)
 
     means,stds = json.load(open(os.path.expanduser(savename)))
     saveplt = "~/Desktop/incidences_stats.pdf"
