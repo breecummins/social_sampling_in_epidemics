@@ -90,29 +90,43 @@ def plot_stats(means,stds,sim_years,saveplt):
     plt.show()
 
 
-if __name__ == "__main__":
-
-    # # from configuration file
-    # total_pop = 15397 
-    # num_seeds = 5588
+def computation_from_study_params(savename):
+    # from configuration file
+    total_pop = 15397 
+    num_seeds = 5588
     sim_years = 6
+    # get incidences from 250 simulations
+    incidences = []
+    for k in range(1,251):
+        print("TASK{}".format(k))
+        fname = "study_params_20220929/results_trimmed_end/JOB758832/TASK{}".format(k)
+        if os.path.exists(fname):
+            i = compute_incidence(fname,sim_years,total_pop,num_seeds)
+            if len(i) > 0:
+                incidences.append(i)
+    compute_stats(incidences,savename)
 
-    # # get incidences from 250 simulations
-    # incidences = []
-    # for k in range(1,251):
-    #     print("TASK{}".format(k))
-    #     fname = "study_params_20220929/results_trimmed_end/JOB758832/TASK{}".format(k)
-    #     if os.path.exists(fname):
-    #         i = compute_incidence(fname,sim_years,total_pop,num_seeds)
-    #         if len(i) > 0:
-    #             incidences.append(i)
 
-    savename = "~/Desktop/incidences_stats.json"
-    # compute_stats(incidences,savename)
-
+def plot_study_params(savename,saveplt):
+    # from configuration file
+    sim_years = 6
+    # load mean incidences
     means,stds = json.load(open(os.path.expanduser(savename)))
-    saveplt = "~/Desktop/incidences_stats.pdf"
+    # plot
     plot_stats(means,stds,sim_years,os.path.expanduser(saveplt))
+
+
+if __name__ == "__main__":
+    # call from within simulations folder:
+    # python scripts/check_incidence.py
+
+    # do computations
+    savename = "study_params_20220929/check_incidence_swaps_transitiontime/incidences_stats.json"
+    # computation_from_study_params(savename)
+
+    # make plots
+    saveplt = "study_params_20220929/check_incidence_swaps_transitiontime/incidences_stats.pdf"
+    plot_study_params(savename,saveplt)
 
     
 
